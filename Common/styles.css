@@ -1,0 +1,26 @@
+/* 
+  Lab 6
+  Sam Silver
+  201901788 
+*/
+
+#gl-canvas {
+  border: 5px black solid;
+  height: fit-content;
+}
+
+.app-container {
+  display: flex;
+}
+
+#ui-container {
+  margin-left: 50px;
+  color: black;
+}
+
+#ui-container > div {
+  display: grid;
+  grid-template-columns: auto 200px 40px;
+  gap:20px;
+  align-items: center;
+}
