@@ -80,6 +80,8 @@ window.onload = function init() {
 
   modelViewMatrix = gl.getUniformLocation(program, 'modelViewMatrix');
 
+  const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
+
   // projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
   const projectionMatrix = perspective(
     45,
@@ -93,13 +95,54 @@ window.onload = function init() {
     flatten(projectionMatrix)
   );
 
+  let cameraTranslate = [0, 0, 0];
+  let input = [];
+
   const player = new Player();
 
-  function renderTree() {
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  // const fpsElem = document.querySelector('#fps');
 
+  // let then = performance.now();
+  function renderTree() {
+    // const now = performance.now();
+    // const deltaTime = now - then; // compute time since last frame
+    // then = now; // remember time for next frame
+    // console.log('delta', deltaTime);
+    // const fps = deltaTime != 0 ? 1000 / deltaTime : 60.0; // compute frames per second
+    // fpsElem.textContent = fps.toFixed(1); // update fps display
+
+    if (input.find((key) => key == 'w')) cameraTranslate[2] -= camSpeed;
+    if (input.find((key) => key == 's')) cameraTranslate[2] += camSpeed;
+
+    if (input.find((key) => key == 'a')) cameraTranslate[0] -= camSpeed;
+    if (input.find((key) => key == 'd')) cameraTranslate[0] += camSpeed;
+
+    if (input.find((key) => key == ' ')) cameraTranslate[1] += camSpeed;
+    if (input.find((key) => key == 'f')) cameraTranslate[1] -= camSpeed;
+
+    const cameraTransform = translate(...cameraTranslate);
+    const inverseCam = inverse(cameraTransform);
+    gl.uniformMatrix4fv(viewMatrix, false, flatten(inverseCam));
+
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     player.render();
+    requestAnimationFrame(renderTree);
   }
+
+  const camSpeed = 0.2;
+
+  window.addEventListener('keypress', function (e) {
+    if (e.repeat) return;
+    if (['w', 's', 'a', 'd', ' ', 'f'].find((key) => key == e.key))
+      input.push(e.key);
+    console.log('Key', input);
+  });
+
+  window.addEventListener('keyup', function (e) {
+    e.preventDefault();
+    input = input.filter((key) => e.key != key);
+    console.log('Key', input);
+  });
 
   renderTree();
 };
