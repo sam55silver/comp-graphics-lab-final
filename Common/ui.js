@@ -37,3 +37,19 @@ const setUpUISlider = (label, range, step, value, callback) => {
 
   ui.appendChild(sliderDiv);
 };
+
+const setUILabel = (title, string) => {
+  const ui = document.getElementById('ui-container');
+
+  const labelDiv = document.createElement('div');
+
+  const labelTitle = document.createElement('label');
+  labelTitle.innerHTML = title;
+  labelDiv.appendChild(labelTitle);
+
+  const labelString = document.createElement('span');
+  labelString.innerHTML = string;
+  labelDiv.appendChild(labelString);
+
+  ui.appendChild(labelDiv);
+};
