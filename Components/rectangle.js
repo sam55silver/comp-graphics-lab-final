@@ -7,7 +7,7 @@ class Rectangle {
     this.color = color;
     this.children = [];
 
-    this.setTransform();
+    this.createTransformMatrix();
 
     this.parent = parent;
     if (parent) {
@@ -29,7 +29,15 @@ class Rectangle {
     gl.enableVertexAttribArray(colorLoc);
   }
 
-  setTransform() {
+  setTranslate(translation) {
+    this.translate = translation;
+  }
+
+  setRotation(rotation) {
+    this.rotation = rotation;
+  }
+
+  createTransformMatrix() {
     const translateMatrix = translate(
       this.translate[0],
       this.translate[1],
@@ -52,7 +60,7 @@ class Rectangle {
 
   render() {
     this.setColor();
-    this.setTransform();
+    this.createTransformMatrix();
     this.currentTransform = this.transform;
 
     if (this.parent) {

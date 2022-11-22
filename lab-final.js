@@ -97,18 +97,38 @@ window.onload = function init() {
 
   let input = [];
 
-  const player = new Player();
+  const groundHeight = 2;
 
-  let cameraPos = vec3(0, 0, 0);
-  let cameraFront = vec3(0, 0, -1);
-  let cameraUp = vec3(0, 1, 0);
+  const player = new Player([0, 0, 0]);
+  const ground = new Rectangle(
+    'ground',
+    [0, -groundHeight, 0],
+    [0, 0, 0],
+    [50, groundHeight, 50],
+    [0.02, 0.52, 0.51],
+    null
+  );
 
   let oldMosPos = [0, 0];
   let mosDir = [0, 0];
   let mouseDown = false;
   let yaw = -90;
-  let pitch = 0;
+  let pitch = -30;
   const sensitivity = 0.8;
+
+  const calcCameraFront = () => {
+    return normalize(
+      vec3(
+        Math.cos(radians(yaw)) * Math.cos(radians(pitch)),
+        Math.sin(radians(pitch)),
+        Math.sin(radians(yaw)) * Math.cos(radians(pitch))
+      )
+    );
+  };
+
+  let cameraPos = vec3(0, 45, 75);
+  let cameraFront = calcCameraFront();
+  let cameraUp = vec3(0, 1, 0);
 
   const fpsElem = document.querySelector('#fps');
 
@@ -154,13 +174,7 @@ window.onload = function init() {
       if (pitch > 89) pitch = 89;
       if (pitch < -89) pitch = -89;
 
-      cameraFront = normalize(
-        vec3(
-          Math.cos(radians(yaw)) * Math.cos(radians(pitch)),
-          Math.sin(radians(pitch)),
-          Math.sin(radians(yaw)) * Math.cos(radians(pitch))
-        )
-      );
+      cameraFront = calcCameraFront();
 
       mosDir = [0, 0];
     }
@@ -168,8 +182,11 @@ window.onload = function init() {
     const view = lookAt(cameraPos, add(cameraPos, cameraFront), cameraUp);
     gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
 
+    console.log('Camera Pos', cameraPos, 'Pitch', pitch, 'Yaw', yaw);
+
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     player.render();
+    ground.render();
     requestAnimationFrame(renderTree);
   }
 
