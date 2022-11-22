@@ -38,8 +38,8 @@ class Rectangle {
     gl.enableVertexAttribArray(colorLoc);
   }
 
-  setTranslate(index, translation) {
-    this.translate[index] = translation;
+  addTranslate(index, translation) {
+    this.translate[index] = this.translate[index] + translation;
   }
 
   setRotation(rotation) {

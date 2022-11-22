@@ -116,9 +116,20 @@ class Player {
   move() {
     const spinSpeed = 2;
 
-    const movePoint = [-25, 25];
-    const angle = Math.atan(movePoint[1] / movePoint[0]);
+    const getQuad = (point) => {
+      if (point[0] <= 0 && point[1] >= 0) return 1;
+      if (point[0] < 0 && point[1] < 0) return 2;
+      if (point[0] < 0 && point[1] < 0) return 3;
+      if (point[0] < 0 && point[1] < 0) return 4;
+    };
+
+    const movePoint = vec3(25, 0, -25);
+    const veloc = normalize(subtract(movePoint, vec3(...this.body.translate)));
+
+    const angle = Math.atan(veloc[2] / veloc[0]);
     const angleDeg = (angle * 180) / Math.PI;
+
+    console.log(angleDeg);
 
     const inRange = (value, final, check) => {
       return value <= final + check && value >= final - check;
@@ -130,19 +141,11 @@ class Player {
 
     this.body.setRotation([0, this.bodyAngle, 0]);
 
-    if (!inRange(this.body.translate[0], movePoint[0], 0.2)) {
-      let x = Math.sin(angle) * this.walkSpeed;
-      // if (movePoint[0] < 0) x = -x;
-      console.log('x', x);
-      this.body.setTranslate(0, this.body.translate[0] + x);
-    }
-    if (!inRange(this.body.translate[2], movePoint[1], 0.2)) {
-      let z = Math.cos(angle) * this.walkSpeed;
-      // if (movePoint[1] < 0) z = -z;
-      this.body.setTranslate(2, this.body.translate[2] + z);
-    }
+    if (!inRange(this.body.translate[0], movePoint[0], 0.2))
+      this.body.addTranslate(0, veloc[0] * this.walkSpeed);
 
-    // console.log('angle', angle, 'body', this.body.translate);
+    if (!inRange(this.body.translate[2], movePoint[2], 0.2))
+      this.body.addTranslate(2, veloc[2] * this.walkSpeed);
   }
 
   walk() {
