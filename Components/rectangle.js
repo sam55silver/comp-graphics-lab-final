@@ -1,11 +1,20 @@
 class Rectangle {
-  constructor(id, translateCords, rotationAngle, scaleCords, color, parent) {
+  constructor(
+    id,
+    translateCords,
+    rotationAngle,
+    scaleCords,
+    color,
+    parent,
+    origin
+  ) {
     this.id = id;
     this.translate = translateCords;
     this.rotation = rotationAngle;
     this.scale = scaleCords;
     this.color = color;
     this.children = [];
+    this.origin = origin;
 
     this.createTransformMatrix();
 
@@ -51,7 +60,9 @@ class Rectangle {
     const mat1 = mult(translateMatrix, rotationXMatrix);
     const mat2 = mult(mat1, rotationYMatrix);
     this.transform = mult(mat2, rotationZMatrix);
-    this.transform = mult(this.transform, translate(0, this.scale[1] / 2, 0));
+    if (this.origin) {
+      this.transform = mult(this.transform, translate(...this.origin));
+    }
   }
 
   setChild(child) {

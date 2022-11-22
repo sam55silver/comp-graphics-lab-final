@@ -102,7 +102,7 @@ window.onload = function init() {
   const player = new Player([0, 0, 0]);
   const ground = new Rectangle(
     'ground',
-    [0, -groundHeight, 0],
+    [0, -(groundHeight / 2), 0],
     [0, 0, 0],
     [50, groundHeight, 50],
     [0.02, 0.52, 0.51],
@@ -181,8 +181,6 @@ window.onload = function init() {
 
     const view = lookAt(cameraPos, add(cameraPos, cameraFront), cameraUp);
     gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
-
-    console.log('Camera Pos', cameraPos, 'Pitch', pitch, 'Yaw', yaw);
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
     player.render();
