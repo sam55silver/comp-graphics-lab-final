@@ -114,15 +114,35 @@ class Player {
   }
 
   move() {
-    // this.body.setRotation([0, this.bodyAngle, 0]);
-    // const spinSpeed = 1;
-    // this.bodyAngle += spinSpeed;
-    // const newZ = this.body.translate[2] + this.walkSpeed;
-    // this.body.setTranslate([
-    //   this.body.translate[0],
-    //   this.body.translate[1],
-    //   newZ,
-    // ]);
+    const spinSpeed = 2;
+
+    const movePoint = [-25, 25];
+    const angle = Math.atan(movePoint[1] / movePoint[0]);
+    const angleDeg = (angle * 180) / Math.PI;
+
+    const inRange = (value, final, check) => {
+      return value <= final + check && value >= final - check;
+    };
+
+    if (!inRange(this.bodyAngle, angleDeg, 2)) {
+      this.bodyAngle += spinSpeed;
+    }
+
+    this.body.setRotation([0, this.bodyAngle, 0]);
+
+    if (!inRange(this.body.translate[0], movePoint[0], 0.2)) {
+      let x = Math.sin(angle) * this.walkSpeed;
+      // if (movePoint[0] < 0) x = -x;
+      console.log('x', x);
+      this.body.setTranslate(0, this.body.translate[0] + x);
+    }
+    if (!inRange(this.body.translate[2], movePoint[1], 0.2)) {
+      let z = Math.cos(angle) * this.walkSpeed;
+      // if (movePoint[1] < 0) z = -z;
+      this.body.setTranslate(2, this.body.translate[2] + z);
+    }
+
+    // console.log('angle', angle, 'body', this.body.translate);
   }
 
   walk() {
