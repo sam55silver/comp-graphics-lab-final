@@ -14,6 +14,8 @@ let modelViewMatrix;
 let cBuffer;
 let colorLoc;
 
+const groundSize = [50, 50];
+
 let points = [];
 
 let vertices = [
@@ -97,14 +99,23 @@ window.onload = function init() {
 
   let input = [];
 
-  const groundHeight = 2;
+  const groundHeight = 1;
 
-  const player = new Player([0, 0, 0]);
+  const player = new Player();
+
+  const players = [];
+
+  const amountPlayers = 10;
+  for (var i = 0; i < amountPlayers; i++) {
+    const ang = generateRandomIntInRange(0, 350);
+    players.push(new Player(getXY(), ang));
+  }
+
   const ground = new Rectangle(
     'ground',
     [0, -(groundHeight / 2), 0],
     [0, 0, 0],
-    [50, groundHeight, 50],
+    [groundSize[0], groundHeight, groundSize[1]],
     [0.02, 0.52, 0.51],
     null
   );
@@ -183,8 +194,11 @@ window.onload = function init() {
     gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    player.render();
     ground.render();
+
+    for (var i in players) {
+      players[i].render();
+    }
     requestAnimationFrame(renderTree);
   }
 

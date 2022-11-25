@@ -105,14 +105,7 @@ class Player {
   }
 
   getMovePoint() {
-    const generateRandomIntInRange = (min, max) => {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    };
-
-    const x = generateRandomIntInRange(-25, 25);
-    const z = generateRandomIntInRange(-25, 25);
-
-    this.movePoint = vec3(x, 0, z);
+    this.movePoint = vec3(...getXY());
     this.veloc = normalize(
       subtract(this.movePoint, vec3(...this.body.translate))
     );
