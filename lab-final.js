@@ -107,7 +107,7 @@ window.onload = function init() {
 
   const amountPlayers = 10;
   for (var i = 0; i < amountPlayers; i++) {
-    const ang = generateRandomIntInRange(0, 350);
+    const ang = generateRandomIntInRange(-350, -10);
     players.push(new Player(getXY(), ang));
   }
 

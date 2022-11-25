@@ -3,9 +3,7 @@ class Player {
     this.animationAngle = 30;
     this.animDirForward = true;
     this.animationSpeed = 2;
-
     this.bodyAngle = bodyAngle ? bodyAngle : 0;
-
     this.walkSpeed = 0.1;
 
     const bodyHeight = 3;
@@ -82,10 +80,26 @@ class Player {
       [0, -(legHeight / 2), 0]
     );
 
-    this.getMovePoint();
+    if (generateRandomIntInRange(1, 2) == 1) {
+      this.setIdle();
+    } else {
+      this.walking = true;
+      this.getMovePoint();
+    }
   }
 
   animate() {
+    if (this.walking || (!this.walking && this.animationAngle != 0)) {
+      if (this.animDirForward) {
+        this.animationAngle -= this.animationSpeed;
+      } else {
+        this.animationAngle += this.animationSpeed;
+      }
+    }
+
+    if (this.animationAngle >= 30) this.animDirForward = true;
+    else if (this.animationAngle <= -30) this.animDirForward = false;
+
     // arms
     this.leftArm.setRotation([this.animationAngle, 0, 0]);
     this.rightArm.setRotation([-this.animationAngle, 0, 0]);
@@ -93,15 +107,14 @@ class Player {
     // Legs
     this.leftLeg.setRotation([-this.animationAngle, 0, 0]);
     this.rightLeg.setRotation([this.animationAngle, 0, 0]);
+  }
 
-    if (this.animDirForward) {
-      this.animationAngle -= this.animationSpeed;
-    } else {
-      this.animationAngle += this.animationSpeed;
-    }
-
-    if (this.animationAngle >= 30) this.animDirForward = true;
-    else if (this.animationAngle <= -30) this.animDirForward = false;
+  setIdle() {
+    this.walking = false;
+    setTimeout(() => {
+      this.getMovePoint();
+      this.walking = true;
+    }, generateRandomIntInRange(500, 1000));
   }
 
   getMovePoint() {
@@ -177,13 +190,15 @@ class Player {
     else atZ = true;
 
     if (atX && atZ) {
-      this.getMovePoint();
+      this.setIdle();
     }
   }
 
   walk() {
+    if (this.walking) {
+      this.move();
+    }
     this.animate();
-    this.move();
   }
 
   render() {
