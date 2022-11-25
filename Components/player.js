@@ -143,7 +143,14 @@ class Player {
 
     this.angleToLookAt = -angleDeg;
 
-    const diff = Math.abs(this.angleToLookAt) - Math.abs(this.bodyAngle);
+    const posAngleToLook = Math.abs(this.angleToLookAt);
+    const posBodyAngle = Math.abs(this.bodyAngle);
+    let diff;
+    if (posAngleToLook >= posBodyAngle) {
+      diff = posAngleToLook - posBodyAngle;
+    } else {
+      diff = 360 - (posBodyAngle - posAngleToLook);
+    }
     this.clockwise = diff > 180 ? false : true;
   }
 
