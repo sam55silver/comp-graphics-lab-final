@@ -36,7 +36,7 @@ class Player {
     this.body = new Rectangle(
       'PlayerBody',
       [0, 0, 0],
-      rot,
+      [0, this.bodyAngle, 0],
       [bodyWidth, bodyHeight, 1],
       [1, 0, 0],
       null,
@@ -114,21 +114,36 @@ class Player {
   }
 
   move() {
-    const spinSpeed = 2;
+    const spinSpeed = 4;
 
     const getQuad = (point) => {
-      if (point[0] <= 0 && point[1] >= 0) return 1;
-      if (point[0] < 0 && point[1] < 0) return 2;
-      if (point[0] < 0 && point[1] < 0) return 3;
-      if (point[0] < 0 && point[1] < 0) return 4;
+      if (point[0] >= 0 && point[1] > 0) return 1;
+      if (point[0] < 0 && point[1] >= 0) return 2;
+      if (point[0] <= 0 && point[1] < 0) return 3;
+      if (point[0] > 0 && point[1] <= 0) return 4;
     };
 
-    const movePoint = vec3(25, 0, -25);
+    const movePoint = vec3(-25, 0, 25);
     const veloc = normalize(subtract(movePoint, vec3(...this.body.translate)));
 
-    const angle = Math.atan(veloc[2] / veloc[0]);
-    const angleDeg = (angle * 180) / Math.PI;
+    const flipSign = (vec) => {
+      let newVec = vec3(vec[0], vec[1], vec[2]);
+      if (vec[0] < 0) newVec[0] = vec[0] * -1;
+      if (vec[2] < 0) newVec[2] = vec[2] * -1;
+      return newVec;
+    };
 
+    const velocAngle = flipSign(veloc);
+
+    const angle = Math.atan(velocAngle[2] / velocAngle[0]);
+    let angleDeg = (angle * 180) / Math.PI;
+
+    const quadrant = getQuad([veloc[0], veloc[2]]);
+    if (quadrant == 2) angleDeg = 180 - angleDeg;
+    if (quadrant == 3) angleDeg = 180 + angleDeg;
+    if (quadrant == 4) angleDeg = 360 - angleDeg;
+
+    angleDeg = -angleDeg + 90;
     console.log(angleDeg);
 
     const inRange = (value, final, check) => {
@@ -136,8 +151,10 @@ class Player {
     };
 
     if (!inRange(this.bodyAngle, angleDeg, 2)) {
-      this.bodyAngle += spinSpeed;
+      this.bodyAngle -= spinSpeed;
     }
+    if (this.bodyAngle == -360) this.bodyAngle = 0;
+    if (this.bodyAngle == 360) this.bodyAngle = 0;
 
     this.body.setRotation([0, this.bodyAngle, 0]);
 
@@ -151,6 +168,7 @@ class Player {
   walk() {
     this.animate();
     this.move();
+    // this.body.setRotation([0, this.bodyAngle - 20, 0]);
   }
 
   render() {
