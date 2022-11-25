@@ -1,10 +1,10 @@
 class Player {
-  constructor(translationCords, rotationAngles) {
+  constructor(translationCords, bodyAngle) {
     this.animationAngle = 30;
     this.animDirForward = true;
     this.animationSpeed = 2;
 
-    this.bodyAngle = 0;
+    this.bodyAngle = bodyAngle ? bodyAngle : 0;
 
     this.walkSpeed = 0.1;
 
@@ -22,25 +22,14 @@ class Player {
     const legWidth = 0.8;
     const legHeight = bodyHeight + 0.4;
 
-    const playerHeightFromBody = legHeight + bodyHeight / 2;
-
-    if (translationCords) {
-      translationCords[1] = translationCords[1] + playerHeightFromBody;
-    }
-
-    const origin = translationCords
-      ? translationCords
-      : [0, playerHeightFromBody, 0];
-    const rot = rotationAngles ? rotationAngles : [0, 0, 0];
-
     this.body = new Rectangle(
       'PlayerBody',
-      [0, 0, 0],
+      translationCords ? translationCords : [0, 0, 0],
       [0, this.bodyAngle, 0],
       [bodyWidth, bodyHeight, 1],
       [1, 0, 0],
       null,
-      origin
+      [0, legHeight + bodyHeight / 2, 0]
     );
 
     this.head = new Rectangle(
@@ -92,6 +81,8 @@ class Player {
       this.body,
       [0, -(legHeight / 2), 0]
     );
+
+    this.getMovePoint();
   }
 
   animate() {
@@ -113,8 +104,18 @@ class Player {
     else if (this.animationAngle <= -30) this.animDirForward = false;
   }
 
-  move() {
-    const spinSpeed = 4;
+  getMovePoint() {
+    const generateRandomIntInRange = (min, max) => {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    };
+
+    const x = generateRandomIntInRange(-25, 25);
+    const z = generateRandomIntInRange(-25, 25);
+
+    this.movePoint = vec3(x, 0, z);
+    this.veloc = normalize(
+      subtract(this.movePoint, vec3(...this.body.translate))
+    );
 
     const getQuad = (point) => {
       if (point[0] >= 0 && point[1] > 0) return 1;
@@ -123,9 +124,6 @@ class Player {
       if (point[0] > 0 && point[1] <= 0) return 4;
     };
 
-    const movePoint = vec3(-25, 0, 25);
-    const veloc = normalize(subtract(movePoint, vec3(...this.body.translate)));
-
     const flipSign = (vec) => {
       let newVec = vec3(vec[0], vec[1], vec[2]);
       if (vec[0] < 0) newVec[0] = vec[0] * -1;
@@ -133,42 +131,59 @@ class Player {
       return newVec;
     };
 
-    const velocAngle = flipSign(veloc);
+    const velocAngle = flipSign(this.veloc);
 
     const angle = Math.atan(velocAngle[2] / velocAngle[0]);
     let angleDeg = (angle * 180) / Math.PI;
 
-    const quadrant = getQuad([veloc[0], veloc[2]]);
+    const quadrant = getQuad([this.veloc[0], this.veloc[2]]);
     if (quadrant == 2) angleDeg = 180 - angleDeg;
     if (quadrant == 3) angleDeg = 180 + angleDeg;
     if (quadrant == 4) angleDeg = 360 - angleDeg;
 
-    angleDeg = -angleDeg + 90;
-    console.log(angleDeg);
+    this.angleToLookAt = -angleDeg;
+
+    const diff = Math.abs(this.angleToLookAt) - Math.abs(this.bodyAngle);
+    this.clockwise = diff > 180 ? false : true;
+  }
+
+  move() {
+    const spinSpeed = 4;
 
     const inRange = (value, final, check) => {
       return value <= final + check && value >= final - check;
     };
 
-    if (!inRange(this.bodyAngle, angleDeg, 2)) {
-      this.bodyAngle -= spinSpeed;
+    if (!inRange(this.bodyAngle, this.angleToLookAt, 2)) {
+      if (this.clockwise) {
+        this.bodyAngle -= spinSpeed;
+      } else {
+        this.bodyAngle += spinSpeed;
+      }
     }
-    if (this.bodyAngle == -360) this.bodyAngle = 0;
-    if (this.bodyAngle == 360) this.bodyAngle = 0;
+    if (this.clockwise && this.bodyAngle <= -360) this.bodyAngle = 0;
+    if (!this.clockwise && this.bodyAngle >= 0) this.bodyAngle = -360;
 
-    this.body.setRotation([0, this.bodyAngle, 0]);
+    this.body.setRotation([0, this.bodyAngle + 90, 0]);
 
-    if (!inRange(this.body.translate[0], movePoint[0], 0.2))
-      this.body.addTranslate(0, veloc[0] * this.walkSpeed);
+    let atX = false;
+    if (!inRange(this.body.translate[0], this.movePoint[0], 0.2))
+      this.body.addTranslate(0, this.veloc[0] * this.walkSpeed);
+    else atX = true;
 
-    if (!inRange(this.body.translate[2], movePoint[2], 0.2))
-      this.body.addTranslate(2, veloc[2] * this.walkSpeed);
+    let atZ = false;
+    if (!inRange(this.body.translate[2], this.movePoint[2], 0.2))
+      this.body.addTranslate(2, this.veloc[2] * this.walkSpeed);
+    else atZ = true;
+
+    if (atX && atZ) {
+      this.getMovePoint();
+    }
   }
 
   walk() {
     this.animate();
     this.move();
-    // this.body.setRotation([0, this.bodyAngle - 20, 0]);
   }
 
   render() {
