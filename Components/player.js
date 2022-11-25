@@ -118,7 +118,7 @@ class Player {
   }
 
   getMovePoint() {
-    this.movePoint = vec3(...getXY());
+    this.movePoint = vec3(...getMovePoint());
     this.veloc = normalize(
       subtract(this.movePoint, vec3(...this.body.translate))
     );
@@ -151,6 +151,7 @@ class Player {
 
     const posAngleToLook = Math.abs(this.angleToLookAt);
     const posBodyAngle = Math.abs(this.bodyAngle);
+
     let diff;
     if (posAngleToLook >= posBodyAngle) {
       diff = posAngleToLook - posBodyAngle;

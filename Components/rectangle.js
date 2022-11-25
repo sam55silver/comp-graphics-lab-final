@@ -69,6 +69,10 @@ class Rectangle {
     this.children.push(child);
   }
 
+  setScale(axis, val) {
+    this.scale[axis] = val;
+  }
+
   render() {
     this.setColor();
     this.createTransformMatrix();

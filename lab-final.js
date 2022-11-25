@@ -101,15 +101,17 @@ window.onload = function init() {
 
   const groundHeight = 1;
 
-  const player = new Player();
-
   const players = [];
+  let playerCount = 5;
 
-  const amountPlayers = 10;
-  for (var i = 0; i < amountPlayers; i++) {
-    const ang = generateRandomIntInRange(-350, -10);
-    players.push(new Player(getXY(), ang));
-  }
+  const createPlayers = (amount) => {
+    for (var i = 0; i < amount; i++) {
+      const ang = generateRandomIntInRange(-350, -10);
+      players.push(new Player(getMovePoint(), ang));
+    }
+  };
+
+  createPlayers(playerCount);
 
   const ground = new Rectangle(
     'ground',
@@ -209,6 +211,35 @@ window.onload = function init() {
   setUILabel('Move Up:', 'f');
   setUILabel('Move Down:', 'z');
   setUILabel('Move Camera:', 'Click and drag in Canvas');
+
+  setUISpacer(50);
+
+  setUpUISlider('Ground Width:', [10, 500], 1, groundSize[0], (val) => {
+    groundSize[0] = val;
+    ground.setScale(0, val);
+  });
+  setUpUISlider('Ground Depth:', [10, 500], 1, groundSize[1], (val) => {
+    groundSize[1] = val;
+    ground.setScale(2, val);
+  });
+
+  setUISpacer(50);
+
+  setUpUISlider('Players:', [0, 100], 1, playerCount, (val) => {
+    console.log('Players');
+    if (playerCount < val) {
+      const diff = val - playerCount;
+      playerCount += diff;
+      createPlayers(diff);
+    } else {
+      const diff = playerCount - val;
+      playerCount -= diff;
+      for (var i = 0; i < diff; i++) {
+        players.pop();
+      }
+    }
+    console.log('Players', playerCount);
+  });
 
   window.addEventListener('keypress', function (e) {
     if (e.repeat) return;

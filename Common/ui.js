@@ -53,3 +53,10 @@ const setUILabel = (title, string) => {
 
   ui.appendChild(labelDiv);
 };
+
+const setUISpacer = (size) => {
+  const ui = document.getElementById('ui-container');
+  const spacerDiv = document.createElement('div');
+  spacerDiv.style.height = size + 'px';
+  ui.appendChild(spacerDiv);
+};
