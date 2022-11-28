@@ -142,7 +142,7 @@ window.onload = function init() {
   let cameraFront = calcCameraFront();
   let cameraUp = vec3(0, 1, 0);
 
-  const fpsElem = document.querySelector('#fps');
+  // const fpsElem = document.querySelector('#fps');
 
   let then = performance.now();
   function renderTree() {
@@ -225,7 +225,6 @@ window.onload = function init() {
   setUISpacer(50);
 
   setUpUISlider('Players:', [0, 100], 1, playerCount, (val) => {
-    console.log('Players');
     if (playerCount < val) {
       const diff = val - playerCount;
       playerCount += diff;
@@ -237,20 +236,17 @@ window.onload = function init() {
         players.pop();
       }
     }
-    console.log('Players', playerCount);
   });
 
   window.addEventListener('keypress', function (e) {
     if (e.repeat) return;
     if (['w', 's', 'a', 'd', 'f', 'z'].find((key) => key == e.key))
       input.push(e.key);
-    console.log('Accepted', input);
   });
 
   window.addEventListener('keyup', function (e) {
     e.preventDefault();
     input = input.filter((key) => e.key != key);
-    console.log('Key', input);
   });
 
   window.addEventListener('mousedown', (e) => {
