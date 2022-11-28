@@ -1,6 +1,7 @@
-class Rectangle {
+class Object {
   constructor(
     id,
+    isCube,
     translateCords,
     rotationAngle,
     scaleCords,
@@ -9,10 +10,14 @@ class Rectangle {
     origin
   ) {
     this.id = id;
+    if (isCube) {
+      this.type = new Cube(color);
+    } else {
+      this.type = new Sphere();
+    }
     this.translate = translateCords;
     this.rotation = rotationAngle;
     this.scale = scaleCords;
-    this.color = color;
     this.children = [];
     this.origin = origin;
 
@@ -22,20 +27,6 @@ class Rectangle {
     if (parent) {
       parent.setChild(this);
     }
-  }
-
-  setColor() {
-    const vec4Color = vec4(this.color[0], this.color[1], this.color[2], 1.0);
-    let colorPoints = [];
-    for (let i = 0; i < 36; i++) {
-      colorPoints.push(vec4Color);
-    }
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colorPoints), gl.STATIC_DRAW);
-
-    gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(colorLoc);
   }
 
   addTranslate(index, translation) {
@@ -74,7 +65,6 @@ class Rectangle {
   }
 
   render() {
-    this.setColor();
     this.createTransformMatrix();
     this.currentTransform = this.transform;
 
@@ -93,9 +83,7 @@ class Rectangle {
       flatten(mult(this.currentTransform, scaleMatrix))
     );
 
-    const NumVertices = 36;
-
-    gl.drawArrays(gl.TRIANGLES, 0, NumVertices);
+    this.type.render();
 
     if (this.children) {
       for (let childIndex in this.children) {

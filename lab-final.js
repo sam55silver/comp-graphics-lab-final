@@ -5,48 +5,51 @@
   201901788
 */
 
-'use strict';
-
 let canvas;
 let gl;
 
 let modelViewMatrix;
 let cBuffer;
 let colorLoc;
+let vBuffer;
+let positionLoc;
 
 const groundSize = [50, 50];
 
-let points = [];
+let cubeVertices = [];
 
-let vertices = [
-  vec4(-0.5, -0.5, 0.5, 1.0),
-  vec4(-0.5, 0.5, 0.5, 1.0),
-  vec4(0.5, 0.5, 0.5, 1.0),
-  vec4(0.5, -0.5, 0.5, 1.0),
-  vec4(-0.5, -0.5, -0.5, 1.0),
-  vec4(-0.5, 0.5, -0.5, 1.0),
-  vec4(0.5, 0.5, -0.5, 1.0),
-  vec4(0.5, -0.5, -0.5, 1.0),
-];
-// Parameters controlling the size of the Robot's arm
+const createCubeVertices = () => {
+  const vertices = [
+    vec4(-0.5, -0.5, 0.5, 1.0),
+    vec4(-0.5, 0.5, 0.5, 1.0),
+    vec4(0.5, 0.5, 0.5, 1.0),
+    vec4(0.5, -0.5, 0.5, 1.0),
+    vec4(-0.5, -0.5, -0.5, 1.0),
+    vec4(-0.5, 0.5, -0.5, 1.0),
+    vec4(0.5, 0.5, -0.5, 1.0),
+    vec4(0.5, -0.5, -0.5, 1.0),
+  ];
 
-function quad(a, b, c, d) {
-  points.push(vertices[a]);
-  points.push(vertices[b]);
-  points.push(vertices[c]);
-  points.push(vertices[a]);
-  points.push(vertices[c]);
-  points.push(vertices[d]);
-}
+  let points = [];
 
-function getCubeVertices() {
-  quad(1, 0, 3, 2);
-  quad(2, 3, 7, 6);
-  quad(3, 0, 4, 7);
-  quad(6, 5, 1, 2);
-  quad(4, 5, 6, 7);
-  quad(5, 4, 0, 1);
-}
+  const addFace = (a, b, c, d) => {
+    points.push(vertices[a]);
+    points.push(vertices[b]);
+    points.push(vertices[c]);
+    points.push(vertices[a]);
+    points.push(vertices[c]);
+    points.push(vertices[d]);
+  };
+
+  addFace(1, 0, 3, 2);
+  addFace(2, 3, 7, 6);
+  addFace(3, 0, 4, 7);
+  addFace(6, 5, 1, 2);
+  addFace(4, 5, 6, 7);
+  addFace(5, 4, 0, 1);
+
+  return points;
+};
 
 window.onload = function init() {
   canvas = document.getElementById('gl-canvas');
@@ -61,7 +64,7 @@ window.onload = function init() {
 
   gl.enable(gl.DEPTH_TEST);
 
-  getCubeVertices();
+  cubeVertices = createCubeVertices();
 
   //
   //  Load shaders and initialize attribute buffers
@@ -69,13 +72,8 @@ window.onload = function init() {
   const program = initShaders(gl, 'vertex-shader', 'fragment-shader');
   gl.useProgram(program);
 
-  const vBuffer = gl.createBuffer();
-  gl.bindBuffer(gl.ARRAY_BUFFER, vBuffer);
-  gl.bufferData(gl.ARRAY_BUFFER, flatten(points), gl.STATIC_DRAW);
-
-  const positionLoc = gl.getAttribLocation(program, 'aPosition');
-  gl.vertexAttribPointer(positionLoc, 4, gl.FLOAT, false, 0, 0);
-  gl.enableVertexAttribArray(positionLoc);
+  vBuffer = gl.createBuffer();
+  positionLoc = gl.getAttribLocation(program, 'aPosition');
 
   cBuffer = gl.createBuffer();
   colorLoc = gl.getAttribLocation(program, 'aColor');
@@ -113,8 +111,9 @@ window.onload = function init() {
 
   createPlayers(playerCount);
 
-  const ground = new Rectangle(
+  const ground = new Object(
     'ground',
+    true,
     [0, -(groundHeight / 2), 0],
     [0, 0, 0],
     [groundSize[0], groundHeight, groundSize[1]],

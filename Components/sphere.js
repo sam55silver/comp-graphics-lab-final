@@ -1,0 +1,3 @@
+class Sphere {
+  constructor(id) {}
+}
