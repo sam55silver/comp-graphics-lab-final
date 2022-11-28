@@ -11,9 +11,9 @@ class Object {
   ) {
     this.id = id;
     if (isCube) {
-      this.type = new Cube(color);
+      this.shape = new Cube(color);
     } else {
-      this.type = new Sphere();
+      this.shape = new Sphere();
     }
     this.translate = translateCords;
     this.rotation = rotationAngle;
@@ -83,7 +83,7 @@ class Object {
       flatten(mult(this.currentTransform, scaleMatrix))
     );
 
-    this.type.render();
+    this.shape.render();
 
     if (this.children) {
       for (let childIndex in this.children) {
