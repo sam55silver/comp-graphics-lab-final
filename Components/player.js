@@ -10,9 +10,9 @@ class Player {
     const bodyWidth = 2;
     const halfBody = bodyHeight / 2;
 
-    const headHeight = 1.3;
-    const headWidth = 1.2;
-    const headDepth = 1.2;
+    const headHeight = 1;
+    const headWidth = 1;
+    const headDepth = 1;
 
     const armWidth = 0.8;
     const armHeight = bodyHeight + 0.4;
@@ -33,8 +33,8 @@ class Player {
 
     this.head = new Object(
       'PlayerHead',
-      true,
-      [0, halfBody, 0],
+      false,
+      [0, halfBody + headHeight / 2, 0],
       [0, 0, 0],
       [headWidth, headHeight, headDepth],
       [1, 1, 0],

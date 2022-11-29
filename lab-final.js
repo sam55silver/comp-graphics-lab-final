@@ -173,7 +173,7 @@ window.onload = function init() {
   let mouseDown = false;
   let yaw = -90;
   let pitch = -30;
-  let sensitivity = 0.8;
+  let sensitivity = 1.5;
 
   const calcCameraFront = () => {
     return normalize(
@@ -190,16 +190,6 @@ window.onload = function init() {
   let cameraUp = vec3(0, 1, 0);
 
   // const fpsElem = document.querySelector('#fps');
-
-  const sphereTest = new Object(
-    'Sphere',
-    false,
-    [0, 0, 0],
-    [0, 0, 0],
-    [1, 1, 1],
-    [1, 0, 0],
-    null
-  );
 
   let then = performance.now();
   function renderTree() {
@@ -252,12 +242,13 @@ window.onload = function init() {
     gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    // ground.render();
 
-    // for (var i in players) {
-    //   players[i].render();
-    // }
-    sphereTest.render();
+    ground.render();
+
+    for (var i in players) {
+      players[i].render();
+    }
+
     requestAnimationFrame(renderTree);
   }
 
