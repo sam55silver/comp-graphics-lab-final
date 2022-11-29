@@ -61,6 +61,9 @@ const createSphereVertices = (horizontal, vertical) => {
   let vertLength = 0;
   let colors = [];
 
+  /* 
+    Algorithm by Jonathan on https://stackoverflow.com/questions/4081898/procedurally-generate-a-sphere-mesh
+  */
   for (let m = 0; m < horizontal; m++) {
     for (let n = 0; n < vertical; n++) {
       const genPoints = (p1, p2) => {
