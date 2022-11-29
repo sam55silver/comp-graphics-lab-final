@@ -13,7 +13,7 @@ class Object {
     if (isCube) {
       this.shape = new Cube(color);
     } else {
-      this.shape = new Sphere();
+      this.shape = new Sphere(color);
     }
     this.translate = translateCords;
     this.rotation = rotationAngle;

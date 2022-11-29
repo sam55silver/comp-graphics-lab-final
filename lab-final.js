@@ -12,6 +12,7 @@ let modelViewMatrix;
 let cBuffer;
 let colorLoc;
 let vBuffer;
+let iBuffer;
 let positionLoc;
 
 const groundSize = [50, 50];
@@ -51,6 +52,65 @@ const createCubeVertices = () => {
   return points;
 };
 
+let sphereVertices = [];
+let vertLength = [];
+let sphereColors = [];
+
+const createSphereVertices = (horizontal, vertical) => {
+  let vertices = [];
+  let vertLength = 0;
+  let colors = [];
+
+  for (let m = 0; m < horizontal; m++) {
+    for (let n = 0; n < vertical; n++) {
+      const genPoints = (p1, p2) => {
+        const x =
+          Math.sin((Math.PI * p1) / horizontal) *
+          Math.cos((2 * Math.PI * p2) / vertical);
+
+        const y =
+          Math.sin((Math.PI * p1) / horizontal) *
+          Math.sin((2 * Math.PI * p2) / vertical);
+
+        const z = Math.cos((Math.PI * p1) / horizontal);
+
+        return [x, y, z];
+      };
+
+      const p1 = genPoints(m, n);
+      const p2 = genPoints(m + 1, n);
+      const p3 = genPoints(m, n + 1);
+      const p4 = genPoints(m + 1, n + 1);
+
+      vertices.push(vec4(...p1, 1));
+      vertices.push(vec4(...p2, 1));
+      vertices.push(vec4(...p3, 1));
+      const color1 = vec4(
+        generateRandomIntInRange(0, 100) / 100,
+        generateRandomIntInRange(0, 100) / 100,
+        generateRandomIntInRange(0, 100) / 100,
+        1
+      );
+
+      vertices.push(vec4(...p4, 1));
+      vertices.push(vec4(...p2, 1));
+      vertices.push(vec4(...p3, 1));
+      const color2 = vec4(
+        generateRandomIntInRange(0, 100) / 100,
+        generateRandomIntInRange(0, 100) / 100,
+        generateRandomIntInRange(0, 100) / 100,
+        1
+      );
+
+      colors.push(color1, color1, color1, color2, color2, color2);
+
+      vertLength += 6;
+    }
+  }
+
+  return [vertices, vertLength, colors];
+};
+
 window.onload = function init() {
   canvas = document.getElementById('gl-canvas');
 
@@ -65,12 +125,15 @@ window.onload = function init() {
   gl.enable(gl.DEPTH_TEST);
 
   cubeVertices = createCubeVertices();
+  [sphereVertices, vertLength, sphereColors] = createSphereVertices(15, 15);
 
   //
   //  Load shaders and initialize attribute buffers
   //
   const program = initShaders(gl, 'vertex-shader', 'fragment-shader');
   gl.useProgram(program);
+
+  iBuffer = gl.createBuffer();
 
   vBuffer = gl.createBuffer();
   positionLoc = gl.getAttribLocation(program, 'aPosition');
@@ -126,7 +189,7 @@ window.onload = function init() {
   let mouseDown = false;
   let yaw = -90;
   let pitch = -30;
-  const sensitivity = 0.8;
+  let sensitivity = 0.8;
 
   const calcCameraFront = () => {
     return normalize(
@@ -143,6 +206,16 @@ window.onload = function init() {
   let cameraUp = vec3(0, 1, 0);
 
   // const fpsElem = document.querySelector('#fps');
+
+  const sphereTest = new Object(
+    'Sphere',
+    false,
+    [0, 0, 0],
+    [0, 0, 0],
+    [1, 1, 1],
+    [1, 0, 0],
+    null
+  );
 
   let then = performance.now();
   function renderTree() {
@@ -195,11 +268,12 @@ window.onload = function init() {
     gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    ground.render();
+    // ground.render();
 
-    for (var i in players) {
-      players[i].render();
-    }
+    // for (var i in players) {
+    //   players[i].render();
+    // }
+    sphereTest.render();
     requestAnimationFrame(renderTree);
   }
 
@@ -210,6 +284,12 @@ window.onload = function init() {
   setUILabel('Move Up:', 'f');
   setUILabel('Move Down:', 'z');
   setUILabel('Move Camera:', 'Click and drag in Canvas');
+
+  setUISpacer(50);
+
+  setUpUISlider('Camera Sensitivity:', [0.1, 3], 0.1, sensitivity, (val) => {
+    sensitivity = val;
+  });
 
   setUISpacer(50);
 
