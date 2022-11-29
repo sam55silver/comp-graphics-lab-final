@@ -12,7 +12,6 @@ let modelViewMatrix;
 let cBuffer;
 let colorLoc;
 let vBuffer;
-let iBuffer;
 let positionLoc;
 
 const groundSize = [50, 50];
@@ -54,12 +53,10 @@ const createCubeVertices = () => {
 
 let sphereVertices = [];
 let vertLength = [];
-let sphereColors = [];
 
 const createSphereVertices = (horizontal, vertical) => {
   let vertices = [];
   let vertLength = 0;
-  let colors = [];
 
   /* 
     Algorithm by Jonathan on https://stackoverflow.com/questions/4081898/procedurally-generate-a-sphere-mesh
@@ -88,30 +85,16 @@ const createSphereVertices = (horizontal, vertical) => {
       vertices.push(vec4(...p1, 1));
       vertices.push(vec4(...p2, 1));
       vertices.push(vec4(...p3, 1));
-      const color1 = vec4(
-        generateRandomIntInRange(0, 100) / 100,
-        generateRandomIntInRange(0, 100) / 100,
-        generateRandomIntInRange(0, 100) / 100,
-        1
-      );
 
       vertices.push(vec4(...p4, 1));
       vertices.push(vec4(...p2, 1));
       vertices.push(vec4(...p3, 1));
-      const color2 = vec4(
-        generateRandomIntInRange(0, 100) / 100,
-        generateRandomIntInRange(0, 100) / 100,
-        generateRandomIntInRange(0, 100) / 100,
-        1
-      );
-
-      colors.push(color1, color1, color1, color2, color2, color2);
 
       vertLength += 6;
     }
   }
 
-  return [vertices, vertLength, colors];
+  return [vertices, vertLength];
 };
 
 window.onload = function init() {
@@ -128,15 +111,13 @@ window.onload = function init() {
   gl.enable(gl.DEPTH_TEST);
 
   cubeVertices = createCubeVertices();
-  [sphereVertices, vertLength, sphereColors] = createSphereVertices(15, 15);
+  [sphereVertices, vertLength] = createSphereVertices(15, 15);
 
   //
   //  Load shaders and initialize attribute buffers
   //
   const program = initShaders(gl, 'vertex-shader', 'fragment-shader');
   gl.useProgram(program);
-
-  iBuffer = gl.createBuffer();
 
   vBuffer = gl.createBuffer();
   positionLoc = gl.getAttribLocation(program, 'aPosition');
