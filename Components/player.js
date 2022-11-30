@@ -20,7 +20,7 @@ class Player {
     const legWidth = 0.8;
     const legHeight = bodyHeight + 0.4;
 
-    this.body = new Object(
+    this.body = new Shape(
       'PlayerBody',
       true,
       translationCords ? translationCords : [0, 0, 0],
@@ -31,7 +31,7 @@ class Player {
       [0, legHeight + bodyHeight / 2, 0]
     );
 
-    this.head = new Object(
+    this.head = new Shape(
       'PlayerHead',
       false,
       [0, halfBody + headHeight / 2, 0],
@@ -42,7 +42,7 @@ class Player {
       [0, headHeight / 2, 0]
     );
 
-    this.rightArm = new Object(
+    this.rightArm = new Shape(
       'PlayerRightArm',
       true,
       [bodyWidth / 2 + armWidth / 2, halfBody, 0],
@@ -53,7 +53,7 @@ class Player {
       [0, -(armHeight / 2), 0]
     );
 
-    this.leftArm = new Object(
+    this.leftArm = new Shape(
       'PlayerLeftArm',
       true,
       [-(bodyWidth / 2 + armWidth / 2), halfBody, 0],
@@ -64,7 +64,7 @@ class Player {
       [0, -(armHeight / 2), 0]
     );
 
-    this.rightLeg = new Object(
+    this.rightLeg = new Shape(
       'PlayerRightLeg',
       true,
       [bodyWidth / 2 - legWidth / 2, -halfBody, 0],
@@ -75,7 +75,7 @@ class Player {
       [0, -(legHeight / 2), 0]
     );
 
-    this.leftLeg = new Object(
+    this.leftLeg = new Shape(
       'PlayerLeftLeg',
       true,
       [-(bodyWidth / 2 - legWidth / 2), -halfBody, 0],

@@ -158,7 +158,7 @@ window.onload = function init() {
 
   createPlayers(playerCount);
 
-  const ground = new Object(
+  const ground = new Shape(
     'ground',
     true,
     [0, -(groundHeight / 2), 0],

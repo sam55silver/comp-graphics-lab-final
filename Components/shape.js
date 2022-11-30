@@ -1,4 +1,4 @@
-class Object {
+class Shape {
   constructor(
     id,
     isCube,
