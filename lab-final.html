@@ -16,7 +16,7 @@
   <script id="vertex-shader" type="x-shader/x-vertex">
     attribute vec4 aPosition;
     attribute vec4 aNormal;
-    varying vec3 N, L, E;
+    varying vec3 N, L, E, V;
 
     uniform mat4 viewMatrix;
     uniform mat4 modelViewMatrix;
@@ -24,6 +24,8 @@
 
     uniform vec4 uLightPosition;
     uniform mat3 uNormalMatrix;
+
+    uniform vec3 uCameraPos;
 
     void main()
     {
@@ -36,6 +38,7 @@
 
         E =  -normalize(pos);
         N = normalize( uNormalMatrix * aNormal.xyz);
+        V = normalize(uCameraPos - pos);
 
         gl_Position = projectionMatrix * totalMatrix;
     }
@@ -49,22 +52,22 @@
     uniform vec4 uSpecularProduct;
     uniform float uShininess;
 
-    varying vec3 N, L, E;
+    varying vec3 N, L, E, V;
 
     void main()
     {
-        vec3 H = normalize( L + E );
+        vec3 H = reflect( -L, N );
         vec4 ambient = uAmbientProduct;
 
         float Kd = max( dot(L, N), 0.0 );
         vec4  diffuse = Kd*uDiffuseProduct;
-
-        float Ks = pow( max(dot(N, H), 0.0), uShininess );
-        vec4  specular = Ks * uSpecularProduct;
+        float powNum = 32.0;
+        float Ks = pow( max(dot(V, H), 0.0),uShininess);
+        vec4  specular =  Ks * uSpecularProduct;
 
         if( dot(L, N) < 0.0 ) specular = vec4(0.0, 0.0, 0.0, 1.0);
 
-        gl_FragColor = ambient + diffuse;
+        gl_FragColor = ambient + diffuse + specular;
         gl_FragColor.a = 1.0;
     }
   </script>

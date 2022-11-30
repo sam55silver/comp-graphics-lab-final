@@ -158,6 +158,7 @@ window.onload = function init() {
   diffuseLoc = gl.getUniformLocation(program, 'uDiffuseProduct');
   specularLoc = gl.getUniformLocation(program, 'uSpecularProduct');
   shininessLoc = gl.getUniformLocation(program, 'uShininess');
+  const uCameraPosLoc = gl.getUniformLocation(program, 'uCameraPos');
 
   // projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
   const projectionMatrix = perspective(
@@ -289,6 +290,9 @@ window.onload = function init() {
 
     const view = lookAt(cameraPos, add(cameraPos, cameraFront), cameraUp);
     gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
+
+    gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
+    gl.uniform3fv(uCameraPosLoc, flatten(cameraPos));
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
