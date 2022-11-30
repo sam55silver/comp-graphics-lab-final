@@ -1,20 +1,17 @@
 class Sphere {
-  constructor(color) {
-    this.color = color;
-  }
+  constructor() {
+    const materialAmbient = vec4(1.0, 0.0, 1.0, 1.0);
+    const materialDiffuse = vec4(1.0, 0.8, 0.0, 1.0);
+    const materialSpecular = vec4(1.0, 1.0, 1.0, 1.0);
+    const materialShininess = 20.0;
 
-  setColor() {
-    const vec4Color = vec4(this.color[0], this.color[1], this.color[2], 1.0);
-    let colorPoints = [];
-    for (let i = 0; i < vertLength; i++) {
-      colorPoints.push(vec4Color);
-    }
-
-    gl.bindBuffer(gl.ARRAY_BUFFER, cBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(colorPoints), gl.STATIC_DRAW);
-
-    gl.vertexAttribPointer(colorLoc, 4, gl.FLOAT, false, 0, 0);
-    gl.enableVertexAttribArray(colorLoc);
+    this.material = new Material(
+      sphereNormals,
+      materialAmbient,
+      materialDiffuse,
+      materialSpecular,
+      materialShininess
+    );
   }
 
   setVertices() {
@@ -26,8 +23,8 @@ class Sphere {
   }
 
   render() {
+    this.material.init();
     this.setVertices();
-    this.setColor();
     gl.drawArrays(gl.TRIANGLES, 0, vertLength);
   }
 }

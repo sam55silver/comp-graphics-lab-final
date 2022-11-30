@@ -76,12 +76,12 @@ class Shape {
     }
 
     const scaleMatrix = scalem(this.scale[0], this.scale[1], this.scale[2]);
+    const finalMat = mult(this.currentTransform, scaleMatrix);
 
-    gl.uniformMatrix4fv(
-      modelViewMatrix,
-      false,
-      flatten(mult(this.currentTransform, scaleMatrix))
-    );
+    const norm = normalMatrix(finalMat, true);
+    gl.uniformMatrix3fv(nMatrixLoc, false, flatten(norm));
+
+    gl.uniformMatrix4fv(modelViewMatrix, false, flatten(finalMat));
 
     this.shape.render();
 

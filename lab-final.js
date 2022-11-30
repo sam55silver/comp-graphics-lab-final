@@ -14,6 +14,19 @@ let colorLoc;
 let vBuffer;
 let positionLoc;
 
+let nMatrixLoc;
+let normalLoc;
+let nBuffer;
+
+let ambientLoc;
+let diffuseLoc;
+let specularLoc;
+let shininessLoc;
+
+const ambientLight = vec4(0.2, 0.2, 0.2, 1.0);
+const diffuseLight = vec4(1.0, 1.0, 1.0, 1.0);
+const specularLight = vec4(1.0, 1.0, 1.0, 1.0);
+
 const groundSize = [50, 50];
 
 let cubeVertices = [];
@@ -53,10 +66,12 @@ const createCubeVertices = () => {
 
 let sphereVertices = [];
 let vertLength = [];
+let sphereNormals = [];
 
 const createSphereVertices = (horizontal, vertical) => {
   let vertices = [];
   let vertLength = 0;
+  let normals = [];
 
   /* 
     Algorithm by Jonathan on https://stackoverflow.com/questions/4081898/procedurally-generate-a-sphere-mesh
@@ -91,10 +106,17 @@ const createSphereVertices = (horizontal, vertical) => {
       vertices.push(vec4(...p3, 1));
 
       vertLength += 6;
+
+      normals.push(vec4(...p1, 0));
+      normals.push(vec4(...p2, 0));
+      normals.push(vec4(...p3, 0));
+      normals.push(vec4(...p4, 0));
+      normals.push(vec4(...p2, 0));
+      normals.push(vec4(...p3, 0));
     }
   }
 
-  return [vertices, vertLength];
+  return [vertices, vertLength, normals];
 };
 
 window.onload = function init() {
@@ -111,7 +133,7 @@ window.onload = function init() {
   gl.enable(gl.DEPTH_TEST);
 
   cubeVertices = createCubeVertices();
-  [sphereVertices, vertLength] = createSphereVertices(15, 15);
+  [sphereVertices, vertLength, sphereNormals] = createSphereVertices(25, 25);
 
   //
   //  Load shaders and initialize attribute buffers
@@ -127,7 +149,15 @@ window.onload = function init() {
 
   modelViewMatrix = gl.getUniformLocation(program, 'modelViewMatrix');
 
+  nBuffer = gl.createBuffer();
+  normalLoc = gl.getAttribLocation(program, 'aNormal');
+
   const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
+
+  ambientLoc = gl.getUniformLocation(program, 'uAmbientProduct');
+  diffuseLoc = gl.getUniformLocation(program, 'uDiffuseProduct');
+  specularLoc = gl.getUniformLocation(program, 'uSpecularProduct');
+  shininessLoc = gl.getUniformLocation(program, 'uShininess');
 
   // projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
   const projectionMatrix = perspective(
@@ -141,6 +171,14 @@ window.onload = function init() {
     false,
     flatten(projectionMatrix)
   );
+
+  const lightPosition = vec4(1.0, 1.0, 1.0, 0.0);
+  gl.uniform4fv(
+    gl.getUniformLocation(program, 'uLightPosition'),
+    flatten(lightPosition)
+  );
+
+  nMatrixLoc = gl.getUniformLocation(program, 'uNormalMatrix');
 
   let input = [];
 
@@ -190,6 +228,17 @@ window.onload = function init() {
   let cameraUp = vec3(0, 1, 0);
 
   // const fpsElem = document.querySelector('#fps');
+
+  const testShape = new Shape(
+    'test',
+    false,
+    [0, 0, 0],
+    [0, 0, 0],
+    [1, 1, 1],
+    [1, 0, 0],
+    null
+  );
+  let rot = 0;
 
   let then = performance.now();
   function renderTree() {
@@ -243,11 +292,15 @@ window.onload = function init() {
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    ground.render();
+    // ground.render();
 
-    for (var i in players) {
-      players[i].render();
-    }
+    // for (var i in players) {
+    //   players[i].render();
+    // }
+
+    rot += 2;
+    testShape.setRotation([rot, rot, 0]);
+    testShape.render();
 
     requestAnimationFrame(renderTree);
   }
