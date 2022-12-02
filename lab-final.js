@@ -22,14 +22,12 @@ let ambientLoc;
 let diffuseLoc;
 let specularLoc;
 let shininessLoc;
-
-const ambientLight = vec4(0.2, 0.2, 0.2, 1.0);
-const diffuseLight = vec4(1.0, 1.0, 1.0, 1.0);
-const specularLight = vec4(1.0, 1.0, 1.0, 1.0);
+let specularSpreadLoc;
 
 const groundSize = [50, 50];
 
 let cubeVertices = [];
+let cubeNormals = [];
 
 const createCubeVertices = () => {
   const vertices = [
@@ -44,14 +42,43 @@ const createCubeVertices = () => {
   ];
 
   let points = [];
+  let normals = [];
 
-  const addFace = (a, b, c, d) => {
+  const addFace = (a, b, c, d, axis) => {
     points.push(vertices[a]);
     points.push(vertices[b]);
     points.push(vertices[c]);
     points.push(vertices[a]);
     points.push(vertices[c]);
     points.push(vertices[d]);
+
+    let normDir;
+
+    for (var i = 0; i <= 2; i++) {
+      if (
+        vertices[a][i] == vertices[b][i] &&
+        vertices[a][i] == vertices[c][i] &&
+        vertices[a][i] == vertices[d][i]
+      ) {
+        normDir = i;
+        break;
+      }
+    }
+
+    const getNorm = (pointIndex) => {
+      let point2 = [...vertices[pointIndex]];
+      point2[normDir] = point2[normDir] * 2;
+
+      return subtract(point2, vertices[pointIndex]);
+      // return point2;
+    };
+
+    normals.push(getNorm(a));
+    normals.push(getNorm(b));
+    normals.push(getNorm(c));
+    normals.push(getNorm(a));
+    normals.push(getNorm(c));
+    normals.push(getNorm(d));
   };
 
   addFace(1, 0, 3, 2);
@@ -61,7 +88,7 @@ const createCubeVertices = () => {
   addFace(4, 5, 6, 7);
   addFace(5, 4, 0, 1);
 
-  return points;
+  return [points, normals];
 };
 
 let sphereVertices = [];
@@ -107,12 +134,16 @@ const createSphereVertices = (horizontal, vertical) => {
 
       vertLength += 6;
 
-      normals.push(vec4(...p1, 0));
-      normals.push(vec4(...p2, 0));
-      normals.push(vec4(...p3, 0));
-      normals.push(vec4(...p4, 0));
-      normals.push(vec4(...p2, 0));
-      normals.push(vec4(...p3, 0));
+      const getNorm = (point) => {
+        return subtract(vec4(...point, 1), vec4(0, 0, 0, 1));
+      };
+
+      normals.push(getNorm(p1));
+      normals.push(getNorm(p2));
+      normals.push(getNorm(p3));
+      normals.push(getNorm(p4));
+      normals.push(getNorm(p2));
+      normals.push(getNorm(p3));
     }
   }
 
@@ -132,8 +163,10 @@ window.onload = function init() {
 
   gl.enable(gl.DEPTH_TEST);
 
-  cubeVertices = createCubeVertices();
+  [cubeVertices, cubeNormals] = createCubeVertices();
   [sphereVertices, vertLength, sphereNormals] = createSphereVertices(25, 25);
+
+  console.log('Cube Normals', cubeNormals);
 
   //
   //  Load shaders and initialize attribute buffers
@@ -144,9 +177,6 @@ window.onload = function init() {
   vBuffer = gl.createBuffer();
   positionLoc = gl.getAttribLocation(program, 'aPosition');
 
-  cBuffer = gl.createBuffer();
-  colorLoc = gl.getAttribLocation(program, 'aColor');
-
   modelViewMatrix = gl.getUniformLocation(program, 'modelViewMatrix');
 
   nBuffer = gl.createBuffer();
@@ -154,10 +184,13 @@ window.onload = function init() {
 
   const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 
-  ambientLoc = gl.getUniformLocation(program, 'uAmbientProduct');
-  diffuseLoc = gl.getUniformLocation(program, 'uDiffuseProduct');
-  specularLoc = gl.getUniformLocation(program, 'uSpecularProduct');
+  ambientLoc = gl.getUniformLocation(program, 'uAmbientColor');
+  diffuseLoc = gl.getUniformLocation(program, 'uDiffuseColor');
+  diffuseIntensityLoc = gl.getUniformLocation(program, 'uDiffuseIntensity');
+  specularLoc = gl.getUniformLocation(program, 'uSpecularColor');
   shininessLoc = gl.getUniformLocation(program, 'uShininess');
+  specularSpreadLoc = gl.getUniformLocation(program, 'uSpecularSpread');
+
   const uCameraPosLoc = gl.getUniformLocation(program, 'uCameraPos');
 
   // projectionMatrix = ortho(-10, 10, -10, 10, -10, 10);
@@ -171,12 +204,6 @@ window.onload = function init() {
     gl.getUniformLocation(program, 'projectionMatrix'),
     false,
     flatten(projectionMatrix)
-  );
-
-  const lightPosition = vec4(1.0, 1.0, 1.0, 0.0);
-  gl.uniform4fv(
-    gl.getUniformLocation(program, 'uLightPosition'),
-    flatten(lightPosition)
   );
 
   nMatrixLoc = gl.getUniformLocation(program, 'uNormalMatrix');
@@ -197,13 +224,35 @@ window.onload = function init() {
 
   createPlayers(playerCount);
 
+  const lightCubeColor = rgbToPercent(252, 186, 3);
+
+  gl.uniform4fv(
+    gl.getUniformLocation(program, 'lightColor'),
+    flatten(vec4(1, 1, 1, 1))
+  );
+
+  let lightPosition = vec3(20.0, 34.0, 5.0);
+  const lightPosLoc = gl.getUniformLocation(program, 'uLightPosition');
+  gl.uniform3fv(lightPosLoc, flatten(lightPosition));
+
+  const light = new Shape(
+    'light',
+    true,
+    lightPosition,
+    [0, 0, 0],
+    [1, 1, 1],
+    new Material(lightCubeColor, lightCubeColor, 1, lightCubeColor, 0, 1),
+    null
+  );
+
+  const groundColor = rgbToPercent(95, 148, 90);
   const ground = new Shape(
     'ground',
     true,
     [0, -(groundHeight / 2), 0],
     [0, 0, 0],
     [groundSize[0], groundHeight, groundSize[1]],
-    [0.02, 0.52, 0.51],
+    new Material(groundColor, groundColor, 0.5, vec4(1, 1, 1, 1), 0, 1),
     null
   );
 
@@ -229,17 +278,6 @@ window.onload = function init() {
   let cameraUp = vec3(0, 1, 0);
 
   // const fpsElem = document.querySelector('#fps');
-
-  const testShape = new Shape(
-    'test',
-    false,
-    [0, 0, 0],
-    [0, 0, 0],
-    [1, 1, 1],
-    [1, 0, 0],
-    null
-  );
-  let rot = 0;
 
   let then = performance.now();
   function renderTree() {
@@ -291,20 +329,17 @@ window.onload = function init() {
     const view = lookAt(cameraPos, add(cameraPos, cameraFront), cameraUp);
     gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
 
-    gl.uniformMatrix4fv(viewMatrix, false, flatten(view));
     gl.uniform3fv(uCameraPosLoc, flatten(cameraPos));
 
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    // ground.render();
+    light.render();
 
-    // for (var i in players) {
-    //   players[i].render();
-    // }
+    ground.render();
 
-    rot += 2;
-    testShape.setRotation([rot, rot, 0]);
-    testShape.render();
+    for (var i in players) {
+      players[i].render();
+    }
 
     requestAnimationFrame(renderTree);
   }
@@ -349,6 +384,35 @@ window.onload = function init() {
       }
     }
   });
+
+  setUISpacer(50);
+
+  const lightPosChange = (axis) => {
+    let axisIndex;
+    if (axis == 'X') {
+      axisIndex = 0;
+    } else if (axis == 'Y') {
+      axisIndex = 1;
+    } else if (axis == 'Z') {
+      axisIndex = 2;
+    }
+
+    setUpUISlider(
+      'Light ' + axis + ':',
+      [-50, 50],
+      0.1,
+      lightPosition[axisIndex],
+      (val) => {
+        lightPosition[axisIndex] = val;
+        light.setTranslation(lightPosition);
+        gl.uniform3fv(lightPosLoc, flatten(lightPosition));
+      }
+    );
+  };
+
+  lightPosChange('X');
+  lightPosChange('Y');
+  lightPosChange('Z');
 
   window.addEventListener('keypress', function (e) {
     if (e.repeat) return;

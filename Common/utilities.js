@@ -10,3 +10,7 @@ const getMovePoint = () => {
 
   return [x, 0, z];
 };
+
+rgbToPercent = (val1, val2, val3) => {
+  return vec4(val1 / 255, val2 / 255, val3 / 255, 1.0);
+};

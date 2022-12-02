@@ -5,15 +5,17 @@ class Shape {
     translateCords,
     rotationAngle,
     scaleCords,
-    color,
+    material,
     parent,
     origin
   ) {
     this.id = id;
     if (isCube) {
-      this.shape = new Cube(color);
+      material.setNormals(cubeNormals);
+      this.shape = new Cube(material);
     } else {
-      this.shape = new Sphere(color);
+      material.setNormals(sphereNormals);
+      this.shape = new Sphere(material);
     }
     this.translate = translateCords;
     this.rotation = rotationAngle;
@@ -31,6 +33,10 @@ class Shape {
 
   addTranslate(index, translation) {
     this.translate[index] = this.translate[index] + translation;
+  }
+
+  setTranslation(translation) {
+    this.translate = translation;
   }
 
   setRotation(rotation) {

@@ -20,35 +20,53 @@ class Player {
     const legWidth = 0.8;
     const legHeight = bodyHeight + 0.4;
 
+    const bodyColor = rgbToPercent(194, 101, 89);
     this.body = new Shape(
       'PlayerBody',
       true,
       translationCords ? translationCords : [0, 0, 0],
       [0, this.bodyAngle, 0],
       [bodyWidth, bodyHeight, 1],
-      [1, 0, 0],
+      new Material(bodyColor, bodyColor, 0.8, vec4(1, 1, 1, 1), 0.1, 60),
       null,
       [0, legHeight + bodyHeight / 2, 0]
     );
 
+    const skinColor = rgbToPercent(255, 215, 148);
+    const skinMat = new Material(
+      skinColor,
+      skinColor,
+      0.2,
+      vec4(1, 1, 1, 1),
+      0.5,
+      16
+    );
     this.head = new Shape(
       'PlayerHead',
       false,
       [0, halfBody + headHeight / 2, 0],
       [0, 0, 0],
       [headWidth, headHeight, headDepth],
-      [1, 1, 0],
+      skinMat,
       this.body,
       [0, headHeight / 2, 0]
     );
 
+    const armMat = new Material(
+      skinColor,
+      skinColor,
+      0.2,
+      vec4(1, 1, 1, 1),
+      0.5,
+      16
+    );
     this.rightArm = new Shape(
       'PlayerRightArm',
       true,
       [bodyWidth / 2 + armWidth / 2, halfBody, 0],
       [0, 0, 0],
       [armWidth, armHeight, 1],
-      [0, 0, 1],
+      armMat,
       this.body,
       [0, -(armHeight / 2), 0]
     );
@@ -59,18 +77,27 @@ class Player {
       [-(bodyWidth / 2 + armWidth / 2), halfBody, 0],
       [0, 0, 0],
       [armWidth, armHeight, 1],
-      [0, 0, 1],
+      armMat,
       this.body,
       [0, -(armHeight / 2), 0]
     );
 
+    const legColor = rgbToPercent(58, 67, 105);
+    const legMat = new Material(
+      legColor,
+      legColor,
+      0.8,
+      vec4(1, 1, 1, 1),
+      0.1,
+      60
+    );
     this.rightLeg = new Shape(
       'PlayerRightLeg',
       true,
       [bodyWidth / 2 - legWidth / 2, -halfBody, 0],
       [0, 0, 0],
       [legWidth, legHeight, 1],
-      [0, 1, 1],
+      legMat,
       this.body,
       [0, -(legHeight / 2), 0]
     );
@@ -81,7 +108,7 @@ class Player {
       [-(bodyWidth / 2 - legWidth / 2), -halfBody, 0],
       [0, 0, 0],
       [legWidth, legHeight, 1],
-      [0, 1, 1],
+      legMat,
       this.body,
       [0, -(legHeight / 2), 0]
     );

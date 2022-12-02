@@ -1,17 +1,6 @@
 class Sphere {
-  constructor() {
-    const materialAmbient = vec4(1.0, 0.0, 1.0, 1.0);
-    const materialDiffuse = vec4(1.0, 0.8, 0.0, 1.0);
-    const materialSpecular = vec4(1.0, 1.0, 1.0, 1.0);
-    const materialShininess = 32;
-
-    this.material = new Material(
-      sphereNormals,
-      materialAmbient,
-      materialDiffuse,
-      materialSpecular,
-      materialShininess
-    );
+  constructor(material) {
+    this.material = material;
   }
 
   setVertices() {

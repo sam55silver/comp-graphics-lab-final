@@ -1,9 +1,14 @@
 class Material {
-  constructor(normals, ambient, diffuse, specular, shininess) {
-    this.ambient = mult(ambientLight, ambient);
-    this.diffuse = mult(diffuseLight, diffuse);
-    this.specular = mult(specularLight, specular);
+  constructor(ambient, diffuse, diffuseIntensity, specular, shininess, spread) {
+    this.ambient = ambient;
+    this.diffuse = diffuse;
+    this.diffuseIntensity = diffuseIntensity;
+    this.specular = specular;
     this.shininess = shininess;
+    this.spread = spread;
+  }
+
+  setNormals(normals) {
     this.normals = normals;
   }
 
@@ -15,8 +20,10 @@ class Material {
     gl.enableVertexAttribArray(normalLoc);
 
     gl.uniform4fv(ambientLoc, flatten(this.ambient));
+    gl.uniform1f(diffuseIntensityLoc, this.diffuseIntensity);
     gl.uniform4fv(diffuseLoc, flatten(this.diffuse));
     gl.uniform4fv(specularLoc, flatten(this.specular));
     gl.uniform1f(shininessLoc, this.shininess);
+    gl.uniform1f(specularSpreadLoc, this.spread);
   }
 }
