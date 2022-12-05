@@ -21,7 +21,7 @@ let nMatrixLoc;
 let normalLoc;
 let nBuffer;
 
-let deltaTime;
+let deltaTime = 0;
 
 let ambientLoc;
 let diffuseLoc;
@@ -358,6 +358,7 @@ const init = () => {
 
     deltaTime = now - then;
     then = now;
+    if (!deltaTime) deltaTime = 0;
 
     const speed = 0.02 * deltaTime;
     const cameraSpeed = vec3(speed, speed, speed);

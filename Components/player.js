@@ -1,6 +1,6 @@
 class Player {
   constructor(translationCords, bodyAngle) {
-    this.animationAngle = 30;
+    this.animationAngle = 0;
     this.animDirForward = true;
     this.bodyAngle = bodyAngle;
 
@@ -126,12 +126,17 @@ class Player {
       this.walking = true;
       this.getMovePoint();
     }
+
+    console.log('player created', this);
   }
 
   animate() {
     const speed = this.animationSpeed * deltaTime;
 
-    if (this.walking || (!this.walking && this.animationAngle != 0)) {
+    if (
+      this.walking ||
+      (!this.walking && !inRange(this.animationAngle, 0, 0.5))
+    ) {
       if (this.animDirForward) {
         this.animationAngle -= speed;
       } else {
@@ -204,10 +209,6 @@ class Player {
   }
 
   move() {
-    const inRange = (value, final, check) => {
-      return value <= final + check && value >= final - check;
-    };
-
     const spinSpeed = this.turnSpeed * deltaTime;
 
     if (!inRange(this.bodyAngle, this.angleToLookAt, 2)) {
@@ -225,12 +226,12 @@ class Player {
     const walkingSpeed = this.walkSpeed * deltaTime;
 
     let atX = false;
-    if (!inRange(this.body.translate[0], this.movePoint[0], 0.2))
+    if (!inRange(this.body.translate[0], this.movePoint[0], 1))
       this.body.addTranslate(0, this.veloc[0] * walkingSpeed);
     else atX = true;
 
     let atZ = false;
-    if (!inRange(this.body.translate[2], this.movePoint[2], 0.2))
+    if (!inRange(this.body.translate[2], this.movePoint[2], 1))
       this.body.addTranslate(2, this.veloc[2] * walkingSpeed);
     else atZ = true;
 

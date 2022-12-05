@@ -30,3 +30,7 @@ const createShapeObject = (length, vertices, normals, textureCoords) => {
     'textureCoords': textureCoords,
   };
 };
+
+const inRange = (value, final, check) => {
+  return value <= final + check && value >= final - check;
+};
