@@ -14,3 +14,10 @@ const getMovePoint = () => {
 rgbToPercent = (val1, val2, val3) => {
   return vec4(val1 / 255, val2 / 255, val3 / 255, 1.0);
 };
+
+const loadImage = (src) =>
+  new Promise((resolve) => {
+    const image = new Image();
+    image.addEventListener('load', () => resolve(image));
+    image.src = src;
+  });

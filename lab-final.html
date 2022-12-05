@@ -16,6 +16,7 @@
   <script id="vertex-shader" type="x-shader/x-vertex">
     attribute vec4 aPosition;
     attribute vec4 aNormal;
+    attribute vec2 aTexCoord;
 
     uniform mat4 viewMatrix;
     uniform mat4 modelViewMatrix;
@@ -25,12 +26,16 @@
 
     varying vec3 norm, fragPos;
 
+    varying vec2 vTexCoord;
+
     void main()
     {
         norm = normalize(uNormalMatrix * aNormal.xyz);
 
         vec4 pos = modelViewMatrix * aPosition;
         fragPos = pos.xyz;
+
+        vTexCoord = aTexCoord;
 
         gl_Position = projectionMatrix * viewMatrix * pos;
     }
@@ -53,6 +58,9 @@
     uniform float uSpecularSpread;
     uniform float uShininess;
 
+    varying vec2 vTexCoord;
+    uniform sampler2D uSampler;
+
     void main()
     {
         vec4 ambient = lightColor * uAmbientColor;
@@ -69,7 +77,9 @@
 
         vec4 specular = specularShine * lightColor * uSpecularColor * uShininess;
 
-        gl_FragColor = ambient + diffuse + specular;
+        vec4 phongModel = ambient + diffuse + specular;
+
+        gl_FragColor = texture2D(uSampler, vTexCoord) * phongModel;
     }
   </script>
 

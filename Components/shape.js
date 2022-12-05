@@ -12,6 +12,7 @@ class Shape {
     this.id = id;
     if (isCube) {
       material.setNormals(cubeNormals);
+      material.setTextureCoords(cubeTextureCoords);
       this.shape = new Cube(material);
     } else {
       material.setNormals(sphereNormals);

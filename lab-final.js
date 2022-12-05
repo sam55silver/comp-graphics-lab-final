@@ -9,8 +9,11 @@ let canvas;
 let gl;
 
 let modelViewMatrix;
-let cBuffer;
-let colorLoc;
+
+let tBuffer;
+let textureCoordLoc;
+let textures = {};
+
 let vBuffer;
 let positionLoc;
 
@@ -28,6 +31,7 @@ const groundSize = [50, 50];
 
 let cubeVertices = [];
 let cubeNormals = [];
+let cubeTextureCoords = [];
 
 const createCubeVertices = () => {
   const vertices = [
@@ -41,16 +45,26 @@ const createCubeVertices = () => {
     vec4(0.5, -0.5, -0.5, 1.0),
   ];
 
+  const uvPoints = [vec2(0, 0), vec2(0, 1), vec2(1, 1), vec2(1, 0)];
+
   let points = [];
   let normals = [];
+  let texCoord = [];
 
-  const addFace = (a, b, c, d, axis) => {
+  const addFace = (a, b, c, d) => {
     points.push(vertices[a]);
     points.push(vertices[b]);
     points.push(vertices[c]);
     points.push(vertices[a]);
     points.push(vertices[c]);
     points.push(vertices[d]);
+
+    texCoord.push(uvPoints[0]);
+    texCoord.push(uvPoints[1]);
+    texCoord.push(uvPoints[2]);
+    texCoord.push(uvPoints[0]);
+    texCoord.push(uvPoints[2]);
+    texCoord.push(uvPoints[3]);
 
     let normDir;
 
@@ -88,7 +102,7 @@ const createCubeVertices = () => {
   addFace(4, 5, 6, 7);
   addFace(5, 4, 0, 1);
 
-  return [points, normals];
+  return [points, normals, texCoord];
 };
 
 let sphereVertices = [];
@@ -150,7 +164,7 @@ const createSphereVertices = (horizontal, vertical) => {
   return [vertices, vertLength, normals];
 };
 
-window.onload = function init() {
+const init = () => {
   canvas = document.getElementById('gl-canvas');
 
   gl = WebGLUtils.setupWebGL(canvas);
@@ -163,10 +177,8 @@ window.onload = function init() {
 
   gl.enable(gl.DEPTH_TEST);
 
-  [cubeVertices, cubeNormals] = createCubeVertices();
-  [sphereVertices, vertLength, sphereNormals] = createSphereVertices(25, 25);
-
-  console.log('Cube Normals', cubeNormals);
+  [cubeVertices, cubeNormals, cubeTextureCoords] = createCubeVertices();
+  [sphereVertices, vertLength, sphereNormals] = createSphereVertices(16, 16);
 
   //
   //  Load shaders and initialize attribute buffers
@@ -181,6 +193,14 @@ window.onload = function init() {
 
   nBuffer = gl.createBuffer();
   normalLoc = gl.getAttribLocation(program, 'aNormal');
+
+  tBuffer = gl.createBuffer();
+  textureCoordLoc = gl.getAttribLocation(program, 'aTexCoord');
+  textureSampleLoc = gl.getUniformLocation(program, 'uSampler');
+  const texture = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, texture);
+
+  // textures['none'] = new Uint8Array([255, 255, 255, 255]);
 
   const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 
@@ -241,7 +261,15 @@ window.onload = function init() {
     lightPosition,
     [0, 0, 0],
     [1, 1, 1],
-    new Material(lightCubeColor, lightCubeColor, 1, lightCubeColor, 0, 1),
+    new Material(
+      lightCubeColor,
+      lightCubeColor,
+      1,
+      lightCubeColor,
+      0,
+      1,
+      'none'
+    ),
     null
   );
 
@@ -252,7 +280,15 @@ window.onload = function init() {
     [0, -(groundHeight / 2), 0],
     [0, 0, 0],
     [groundSize[0], groundHeight, groundSize[1]],
-    new Material(groundColor, groundColor, 0.5, vec4(1, 1, 1, 1), 0, 1),
+    new Material(
+      groundColor,
+      groundColor,
+      0.5,
+      vec4(1, 1, 1, 1),
+      0,
+      1,
+      'grass'
+    ),
     null
   );
 
@@ -450,4 +486,13 @@ window.onload = function init() {
   });
 
   renderTree();
+};
+
+window.onload = async () => {
+  // Load textures
+  textures['grass'] = await loadImage('./textures/grass.jpg');
+  textures['none'] = await loadImage('./textures/none.jpg');
+  textures['jeans'] = await loadImage('./textures/jeans.jpg');
+
+  init();
 };

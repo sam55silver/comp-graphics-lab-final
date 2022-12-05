@@ -41,16 +41,16 @@ class Player {
       0.5,
       16
     );
-    this.head = new Shape(
-      'PlayerHead',
-      false,
-      [0, halfBody + headHeight / 2, 0],
-      [0, 0, 0],
-      [headWidth, headHeight, headDepth],
-      skinMat,
-      this.body,
-      [0, headHeight / 2, 0]
-    );
+    // this.head = new Shape(
+    //   'PlayerHead',
+    //   false,
+    //   [0, halfBody + headHeight / 2, 0],
+    //   [0, 0, 0],
+    //   [headWidth, headHeight, headDepth],
+    //   skinMat,
+    //   this.body,
+    //   [0, headHeight / 2, 0]
+    // );
 
     const armMat = new Material(
       skinColor,
@@ -89,7 +89,8 @@ class Player {
       0.8,
       vec4(1, 1, 1, 1),
       0.1,
-      60
+      60,
+      'jeans'
     );
     this.rightLeg = new Shape(
       'PlayerRightLeg',
