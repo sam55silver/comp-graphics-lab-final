@@ -108,11 +108,13 @@ const createCubeVertices = () => {
 let sphereVertices = [];
 let vertLength = [];
 let sphereNormals = [];
+let sphereTexCoords = [];
 
 const createSphereVertices = (horizontal, vertical) => {
   let vertices = [];
   let vertLength = 0;
   let normals = [];
+  let texCoords = [];
 
   /* 
     Algorithm by Jonathan on https://stackoverflow.com/questions/4081898/procedurally-generate-a-sphere-mesh
@@ -149,19 +151,44 @@ const createSphereVertices = (horizontal, vertical) => {
       vertLength += 6;
 
       const getNorm = (point) => {
-        return subtract(vec4(...point, 1), vec4(0, 0, 0, 1));
+        const normP = subtract(vec4(...point, 1), vec4(0, 0, 0, 1));
+        normals.push(normP);
+
+        const getTexCoord = (p) => {
+          return Math.asin(p) / Math.PI + 0.5;
+        };
+        const texCoord = vec2(getTexCoord(normP[0]), getTexCoord(normP[1]));
+        texCoords.push(texCoord);
       };
 
-      normals.push(getNorm(p1));
-      normals.push(getNorm(p2));
-      normals.push(getNorm(p3));
-      normals.push(getNorm(p4));
-      normals.push(getNorm(p2));
-      normals.push(getNorm(p3));
+      getNorm(p1);
+      getNorm(p2);
+      getNorm(p3);
+      getNorm(p4);
+      getNorm(p2);
+      getNorm(p3);
     }
   }
 
-  return [vertices, vertLength, normals];
+  const half = vertLength / 2;
+  console.log('half', half);
+
+  const vertHalf = vertices.slice(0, half);
+  const normsHalf = normals.slice(0, half);
+  const texCoordsHalf = texCoords.slice(0, half);
+
+  const createHalfSphere = (length, vertices, normals, textureCoords) => {
+    return {
+      'length': length,
+      'vertices': vertices,
+      'normals': normals,
+      'textureCoords': textureCoords,
+    };
+  };
+
+  console.log('Original', vertLength, vertices, normals, texCoords);
+
+  return [vertHalf, half, normsHalf, texCoordsHalf];
 };
 
 const init = () => {
@@ -178,7 +205,17 @@ const init = () => {
   gl.enable(gl.DEPTH_TEST);
 
   [cubeVertices, cubeNormals, cubeTextureCoords] = createCubeVertices();
-  [sphereVertices, vertLength, sphereNormals] = createSphereVertices(16, 16);
+  [sphereVertices, vertLength, sphereNormals, sphereTexCoords] =
+    createSphereVertices(16, 16);
+
+  console.log(
+    'vertices',
+    vertLength,
+    'sphereNormals',
+    sphereNormals,
+    'sphereTexCoords',
+    sphereTexCoords
+  );
 
   //
   //  Load shaders and initialize attribute buffers
@@ -200,8 +237,6 @@ const init = () => {
 
   let textureUnit = 0;
   for (let texIndex in textures) {
-    console.log('texture:', textures[texIndex]);
-
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -227,8 +262,6 @@ const init = () => {
     textures[texIndex]['texture'] = texture;
     textureUnit++;
   }
-
-  console.log('texture:', textures);
 
   const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 
@@ -517,16 +550,17 @@ const init = () => {
 };
 
 window.onload = async () => {
+  const createTexture = async (name) => {
+    textures[name] = {
+      'image': await loadImage('./textures/' + name + '.jpg'),
+    };
+  };
   // Load textures
-  textures['grass'] = {
-    'image': await loadImage('./textures/grass.jpg'),
-  };
-  textures['jeans'] = {
-    'image': await loadImage('./textures/jeans.jpg'),
-  };
-  textures['none'] = {
-    'image': await loadImage('./textures/none.jpg'),
-  };
+  await createTexture('grass');
+  await createTexture('jeans');
+  await createTexture('none');
+  await createTexture('shirt');
+  await createTexture('face');
 
   init();
 };

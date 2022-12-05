@@ -16,6 +16,7 @@ class Shape {
       this.shape = new Cube(material);
     } else {
       material.setNormals(sphereNormals);
+      material.setTextureCoords(sphereTexCoords);
       this.shape = new Sphere(material);
     }
     this.translate = translateCords;
