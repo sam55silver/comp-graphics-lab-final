@@ -27,18 +27,18 @@ class Player {
       translationCords ? translationCords : [0, 0, 0],
       [0, this.bodyAngle, 0],
       [bodyWidth, bodyHeight, 1],
-      new Material(bodyColor, bodyColor, 0.8, vec4(1, 1, 1, 1), 0.1, 60, [
+      new Material(bodyColor, bodyColor, 1, vec4(1, 1, 1, 1), 0.1, 60, [
         'shirt',
       ]),
       null,
       [0, legHeight + bodyHeight / 2, 0]
     );
 
-    const skinColor = rgbToPercent(255, 215, 148);
+    const skinColor = rgbToPercent(255, 255, 255);
     const skinMat = new Material(
       skinColor,
       skinColor,
-      0.2,
+      1,
       vec4(1, 1, 1, 1),
       0.5,
       16,
@@ -58,7 +58,7 @@ class Player {
     const armMat = new Material(
       skinColor,
       skinColor,
-      0.2,
+      1,
       vec4(1, 1, 1, 1),
       0.5,
       16,
@@ -86,11 +86,11 @@ class Player {
       [0, -(armHeight / 2), 0]
     );
 
-    const legColor = rgbToPercent(58, 67, 105);
+    const legColor = rgbToPercent(90, 94, 158);
     const legMat = new Material(
       legColor,
       legColor,
-      0.8,
+      1,
       vec4(1, 1, 1, 1),
       0.1,
       60,

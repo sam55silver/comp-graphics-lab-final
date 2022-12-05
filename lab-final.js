@@ -321,7 +321,7 @@ const init = () => {
     [0, -(groundHeight / 2), 0],
     [0, 0, 0],
     [groundSize[0], groundHeight, groundSize[1]],
-    new Material(groundColor, groundColor, 0.5, vec4(1, 1, 1, 1), 0, 1, [
+    new Material(groundColor, groundColor, 0.8, vec4(1, 1, 1, 1), 0, 1, [
       'grass',
     ]),
     null
