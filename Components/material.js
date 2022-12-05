@@ -43,23 +43,9 @@ class Material {
     gl.vertexAttribPointer(textureCoordLoc, 2, gl.FLOAT, true, 0, 0);
     gl.enableVertexAttribArray(textureCoordLoc);
 
-    gl.texImage2D(
-      gl.TEXTURE_2D,
-      0,
-      gl.RGBA,
-      gl.RGBA,
-      gl.UNSIGNED_BYTE,
-      this.texture
-    );
-    gl.generateMipmap(gl.TEXTURE_2D);
-    gl.texParameteri(
-      gl.TEXTURE_2D,
-      gl.TEXTURE_MIN_FILTER,
-      gl.NEAREST_MIPMAP_LINEAR
-    );
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-    gl.uniform1i(textureSampleLoc, 0);
+    gl.uniform1i(textureSampleLoc, this.texture.index);
+    gl.activeTexture(gl.TEXTURE0 + this.texture.index);
+    gl.bindTexture(gl.TEXTURE_2D, this.texture.texture);
 
     gl.uniform4fv(ambientLoc, flatten(this.ambient));
     gl.uniform1f(diffuseIntensityLoc, this.diffuseIntensity);

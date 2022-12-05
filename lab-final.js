@@ -197,10 +197,38 @@ const init = () => {
   tBuffer = gl.createBuffer();
   textureCoordLoc = gl.getAttribLocation(program, 'aTexCoord');
   textureSampleLoc = gl.getUniformLocation(program, 'uSampler');
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
 
-  // textures['none'] = new Uint8Array([255, 255, 255, 255]);
+  let textureUnit = 0;
+  for (let texIndex in textures) {
+    console.log('texture:', textures[texIndex]);
+
+    const texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+
+    gl.texParameteri(
+      gl.TEXTURE_2D,
+      gl.TEXTURE_MIN_FILTER,
+      gl.NEAREST_MIPMAP_LINEAR
+    );
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+    gl.texImage2D(
+      gl.TEXTURE_2D,
+      0,
+      gl.RGBA,
+      gl.RGBA,
+      gl.UNSIGNED_BYTE,
+      textures[texIndex].image
+    );
+    gl.generateMipmap(gl.TEXTURE_2D);
+
+    textures[texIndex]['index'] = textureUnit;
+    textures[texIndex]['texture'] = texture;
+    textureUnit++;
+  }
+
+  console.log('texture:', textures);
 
   const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 
@@ -490,9 +518,15 @@ const init = () => {
 
 window.onload = async () => {
   // Load textures
-  textures['grass'] = await loadImage('./textures/grass.jpg');
-  textures['none'] = await loadImage('./textures/none.jpg');
-  textures['jeans'] = await loadImage('./textures/jeans.jpg');
+  textures['grass'] = {
+    'image': await loadImage('./textures/grass.jpg'),
+  };
+  textures['jeans'] = {
+    'image': await loadImage('./textures/jeans.jpg'),
+  };
+  textures['none'] = {
+    'image': await loadImage('./textures/none.jpg'),
+  };
 
   init();
 };
