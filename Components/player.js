@@ -126,8 +126,6 @@ class Player {
       this.walking = true;
       this.getMovePoint();
     }
-
-    console.log('player created', this);
   }
 
   animate() {

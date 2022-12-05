@@ -171,7 +171,6 @@ const createSphereVertices = (horizontal, vertical) => {
   }
 
   const half = vertLength / 2;
-  console.log('half', half);
 
   const vertHalf = vertices.slice(0, half);
   const normsHalf = normals.slice(0, half);
@@ -202,8 +201,6 @@ const init = () => {
 
   cubePoints = createCubeVertices();
   sphereHalves = createSphereVertices(16, 16);
-
-  console.log('cube', cubePoints, 'sphere', sphereHalves);
 
   //
   //  Load shaders and initialize attribute buffers
@@ -250,8 +247,6 @@ const init = () => {
     loadedTextures[texIndex]['texture'] = texture;
     textureUnit++;
   }
-
-  console.log('loadedTextures', loadedTextures);
 
   const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 
