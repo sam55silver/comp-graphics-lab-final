@@ -306,7 +306,7 @@ const init = () => {
     true,
     lightPosition,
     [0, 0, 0],
-    [1, 1, 1],
+    [2, 2, 2],
     new Material(lightCubeColor, lightCubeColor, 1, lightCubeColor, 0, 1),
     null
   );
@@ -330,6 +330,7 @@ const init = () => {
   let yaw = -90;
   let pitch = -30;
   let sensitivity = 1.5;
+  let camSpeed = 40;
 
   const calcCameraFront = () => {
     return normalize(
@@ -355,7 +356,7 @@ const init = () => {
     then = now;
     if (!deltaTime) deltaTime = 0;
 
-    const speed = 0.02 * deltaTime;
+    const speed = camSpeed * deltaTime;
     const cameraSpeed = vec3(speed, speed, speed);
 
     if (input.find((key) => key == 'w'))
@@ -419,6 +420,10 @@ const init = () => {
   setUILabel('Move Camera:', 'Click and drag in Canvas');
 
   setUISpacer(50);
+
+  setUpUISlider('Camera Speed:', [5, 80], 0.1, camSpeed, (val) => {
+    camSpeed = val;
+  });
 
   setUpUISlider('Camera Sensitivity:', [0.1, 3], 0.1, sensitivity, (val) => {
     sensitivity = val;
