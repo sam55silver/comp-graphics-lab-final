@@ -301,15 +301,49 @@ const init = () => {
   const lightPosLoc = gl.getUniformLocation(program, 'uLightPosition');
   gl.uniform3fv(lightPosLoc, flatten(lightPosition));
 
+  const lightMat = new Material(
+    lightCubeColor,
+    lightCubeColor,
+    1,
+    lightCubeColor,
+    0,
+    1
+  );
   const light = new Shape(
     'light',
     true,
     lightPosition,
     [0, 0, 0],
     [2, 2, 2],
-    new Material(lightCubeColor, lightCubeColor, 1, lightCubeColor, 0, 1),
+    lightMat,
     null
   );
+
+  const divisionZ = 8;
+  const divisionY = 4;
+  const rotAngleZ = 360 / divisionZ;
+  const rotAngleY = 360 / divisionY;
+  let angleY = 0;
+  for (var j = 0; j < divisionY; j++) {
+    let angleZ = 0;
+    for (var i = 0; i < divisionZ; i++) {
+      const heightDiff = 3;
+
+      const lightStem = new Shape(
+        'stem',
+        true,
+        [0, 0, 0],
+        [0, angleY, angleZ],
+        [0.5, 2, 0.5],
+        lightMat,
+        light,
+        [0, heightDiff, 0]
+      );
+
+      angleZ += rotAngleZ;
+    }
+    angleY += rotAngleY;
+  }
 
   const groundColor = rgbToPercent(95, 148, 90);
   const ground = new Shape(
