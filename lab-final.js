@@ -21,6 +21,8 @@ let nMatrixLoc;
 let normalLoc;
 let nBuffer;
 
+let deltaTime;
+
 let ambientLoc;
 let diffuseLoc;
 let specularLoc;
@@ -350,15 +352,12 @@ const init = () => {
 
   // const fpsElem = document.querySelector('#fps');
 
-  let then = performance.now();
-  function renderTree() {
-    const now = performance.now();
-    const deltaTime = now - then; // compute time since last frame
-    // console.log('deltaTime', deltaTime);
-    then = now; // remember time for next frame
-    // console.log('delta', deltaTime);
-    // const fps = deltaTime != 0 ? 1000 / deltaTime : 60.0; // compute frames per second
-    // fpsElem.textContent = fps.toFixed(1); // update fps display
+  let then = 0;
+  function renderTree(now) {
+    now *= 0.001;
+
+    deltaTime = now - then;
+    then = now;
 
     const speed = 0.02 * deltaTime;
     const cameraSpeed = vec3(speed, speed, speed);
