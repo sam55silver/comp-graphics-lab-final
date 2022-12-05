@@ -2,9 +2,11 @@ class Player {
   constructor(translationCords, bodyAngle) {
     this.animationAngle = 30;
     this.animDirForward = true;
-    this.animationSpeed = 2;
-    this.bodyAngle = bodyAngle ? bodyAngle : 0;
-    this.walkSpeed = 0.1;
+    this.bodyAngle = bodyAngle;
+
+    this.animationSpeed = 90;
+    this.walkSpeed = 10;
+    this.turnSpeed = 360;
 
     const bodyHeight = 3;
     const bodyWidth = 2;
@@ -127,11 +129,13 @@ class Player {
   }
 
   animate() {
+    const speed = this.animationSpeed * deltaTime;
+
     if (this.walking || (!this.walking && this.animationAngle != 0)) {
       if (this.animDirForward) {
-        this.animationAngle -= this.animationSpeed;
+        this.animationAngle -= speed;
       } else {
-        this.animationAngle += this.animationSpeed;
+        this.animationAngle += speed;
       }
     }
 
@@ -200,11 +204,11 @@ class Player {
   }
 
   move() {
-    const spinSpeed = 4;
-
     const inRange = (value, final, check) => {
       return value <= final + check && value >= final - check;
     };
+
+    const spinSpeed = this.turnSpeed * deltaTime;
 
     if (!inRange(this.bodyAngle, this.angleToLookAt, 2)) {
       if (this.clockwise) {
@@ -218,14 +222,16 @@ class Player {
 
     this.body.setRotation([0, this.bodyAngle + 90, 0]);
 
+    const walkingSpeed = this.walkSpeed * deltaTime;
+
     let atX = false;
     if (!inRange(this.body.translate[0], this.movePoint[0], 0.2))
-      this.body.addTranslate(0, this.veloc[0] * this.walkSpeed);
+      this.body.addTranslate(0, this.veloc[0] * walkingSpeed);
     else atX = true;
 
     let atZ = false;
     if (!inRange(this.body.translate[2], this.movePoint[2], 0.2))
-      this.body.addTranslate(2, this.veloc[2] * this.walkSpeed);
+      this.body.addTranslate(2, this.veloc[2] * walkingSpeed);
     else atZ = true;
 
     if (atX && atZ) {
