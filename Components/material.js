@@ -22,23 +22,27 @@ class Material {
     }
   }
 
-  setNormals(normals) {
-    this.normals = normals;
-  }
+  // setNormals(normals) {
+  //   this.normals = normals;
+  // }
 
-  setTextureCoords(coords) {
-    this.textureCoords = coords;
-  }
+  // setTextureCoords(coords) {
+  //   this.textureCoords = coords;
+  // }
 
-  init() {
+  init(shape) {
     gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(this.normals), gl.STATIC_DRAW);
+    gl.bufferData(gl.ARRAY_BUFFER, flatten(shape.normals), gl.STATIC_DRAW);
 
     gl.vertexAttribPointer(normalLoc, 4, gl.FLOAT, false, 0, 0);
     gl.enableVertexAttribArray(normalLoc);
 
     gl.bindBuffer(gl.ARRAY_BUFFER, tBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, flatten(this.textureCoords), gl.STATIC_DRAW);
+    gl.bufferData(
+      gl.ARRAY_BUFFER,
+      flatten(shape.textureCoords),
+      gl.STATIC_DRAW
+    );
 
     gl.vertexAttribPointer(textureCoordLoc, 2, gl.FLOAT, true, 0, 0);
     gl.enableVertexAttribArray(textureCoordLoc);

@@ -11,12 +11,12 @@ class Shape {
   ) {
     this.id = id;
     if (isCube) {
-      material.setNormals(cubeNormals);
-      material.setTextureCoords(cubeTextureCoords);
+      // material.setNormals(cubeNormals);
+      // material.setTextureCoords(cubeTextureCoords);
       this.shape = new Cube(material);
     } else {
-      material.setNormals(sphereNormals);
-      material.setTextureCoords(sphereTexCoords);
+      // material.setNormals(sphereNormals);
+      // material.setTextureCoords(sphereTexCoords);
       this.shape = new Sphere(material);
     }
     this.translate = translateCords;

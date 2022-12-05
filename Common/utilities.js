@@ -21,3 +21,12 @@ const loadImage = (src) =>
     image.addEventListener('load', () => resolve(image));
     image.src = src;
   });
+
+const createShapeObject = (length, vertices, normals, textureCoords) => {
+  return {
+    'length': length,
+    'vertices': vertices,
+    'normals': normals,
+    'textureCoords': textureCoords,
+  };
+};

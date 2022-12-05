@@ -29,9 +29,7 @@ let specularSpreadLoc;
 
 const groundSize = [50, 50];
 
-let cubeVertices = [];
-let cubeNormals = [];
-let cubeTextureCoords = [];
+let cubePoints;
 
 const createCubeVertices = () => {
   const vertices = [
@@ -50,6 +48,7 @@ const createCubeVertices = () => {
   let points = [];
   let normals = [];
   let texCoord = [];
+  let length = 0;
 
   const addFace = (a, b, c, d) => {
     points.push(vertices[a]);
@@ -93,6 +92,8 @@ const createCubeVertices = () => {
     normals.push(getNorm(a));
     normals.push(getNorm(c));
     normals.push(getNorm(d));
+
+    length += 6;
   };
 
   addFace(1, 0, 3, 2);
@@ -102,13 +103,10 @@ const createCubeVertices = () => {
   addFace(4, 5, 6, 7);
   addFace(5, 4, 0, 1);
 
-  return [points, normals, texCoord];
+  return createShapeObject(length, points, normals, texCoord);
 };
 
-let sphereVertices = [];
-let vertLength = [];
-let sphereNormals = [];
-let sphereTexCoords = [];
+let sphereHalves;
 
 const createSphereVertices = (horizontal, vertical) => {
   let vertices = [];
@@ -177,18 +175,14 @@ const createSphereVertices = (horizontal, vertical) => {
   const normsHalf = normals.slice(0, half);
   const texCoordsHalf = texCoords.slice(0, half);
 
-  const createHalfSphere = (length, vertices, normals, textureCoords) => {
-    return {
-      'length': length,
-      'vertices': vertices,
-      'normals': normals,
-      'textureCoords': textureCoords,
-    };
+  const vertEnd = vertices.slice(half, vertLength);
+  const normsEnd = normals.slice(half, vertLength);
+  const texCoordsEnd = texCoords.slice(half, vertLength);
+
+  return {
+    'front': createShapeObject(half, vertHalf, normsHalf, texCoordsHalf),
+    'back': createShapeObject(half, vertEnd, normsEnd, texCoordsEnd),
   };
-
-  console.log('Original', vertLength, vertices, normals, texCoords);
-
-  return [vertHalf, half, normsHalf, texCoordsHalf];
 };
 
 const init = () => {
@@ -204,18 +198,10 @@ const init = () => {
 
   gl.enable(gl.DEPTH_TEST);
 
-  [cubeVertices, cubeNormals, cubeTextureCoords] = createCubeVertices();
-  [sphereVertices, vertLength, sphereNormals, sphereTexCoords] =
-    createSphereVertices(16, 16);
+  cubePoints = createCubeVertices();
+  sphereHalves = createSphereVertices(16, 16);
 
-  console.log(
-    'vertices',
-    vertLength,
-    'sphereNormals',
-    sphereNormals,
-    'sphereTexCoords',
-    sphereTexCoords
-  );
+  console.log('cube', cubePoints, 'sphere', sphereHalves);
 
   //
   //  Load shaders and initialize attribute buffers
