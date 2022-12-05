@@ -6,7 +6,7 @@ class Material {
     specular,
     shininess,
     spread,
-    texture
+    textures
   ) {
     this.ambient = ambient;
     this.diffuse = diffuse;
@@ -15,10 +15,13 @@ class Material {
     this.shininess = shininess;
     this.spread = spread;
 
-    if (texture) {
-      this.texture = textures[texture];
+    if (textures) {
+      this.textures = [];
+      for (let textureIndex in textures) {
+        this.textures.push(loadedTextures[textures[textureIndex]]);
+      }
     } else {
-      this.texture = textures['none'];
+      this.textures = [loadedTextures['none']];
     }
   }
 
@@ -30,7 +33,7 @@ class Material {
   //   this.textureCoords = coords;
   // }
 
-  init(shape) {
+  init(shape, multiTextureIndex) {
     gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(shape.normals), gl.STATIC_DRAW);
 
@@ -47,9 +50,15 @@ class Material {
     gl.vertexAttribPointer(textureCoordLoc, 2, gl.FLOAT, true, 0, 0);
     gl.enableVertexAttribArray(textureCoordLoc);
 
-    gl.uniform1i(textureSampleLoc, this.texture.index);
-    gl.activeTexture(gl.TEXTURE0 + this.texture.index);
-    gl.bindTexture(gl.TEXTURE_2D, this.texture.texture);
+    let texture = this.textures[0];
+
+    if (multiTextureIndex) {
+      texture = this.textures[multiTextureIndex];
+    }
+
+    gl.uniform1i(textureSampleLoc, texture.index);
+    gl.activeTexture(gl.TEXTURE0 + texture.index);
+    gl.bindTexture(gl.TEXTURE_2D, texture.texture);
 
     gl.uniform4fv(ambientLoc, flatten(this.ambient));
     gl.uniform1f(diffuseIntensityLoc, this.diffuseIntensity);

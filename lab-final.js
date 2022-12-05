@@ -12,7 +12,7 @@ let modelViewMatrix;
 
 let tBuffer;
 let textureCoordLoc;
-let textures = {};
+let loadedTextures = {};
 
 let vBuffer;
 let positionLoc;
@@ -222,7 +222,7 @@ const init = () => {
   textureSampleLoc = gl.getUniformLocation(program, 'uSampler');
 
   let textureUnit = 0;
-  for (let texIndex in textures) {
+  for (let texIndex in loadedTextures) {
     const texture = gl.createTexture();
     gl.bindTexture(gl.TEXTURE_2D, texture);
 
@@ -240,14 +240,16 @@ const init = () => {
       gl.RGBA,
       gl.RGBA,
       gl.UNSIGNED_BYTE,
-      textures[texIndex].image
+      loadedTextures[texIndex].image
     );
     gl.generateMipmap(gl.TEXTURE_2D);
 
-    textures[texIndex]['index'] = textureUnit;
-    textures[texIndex]['texture'] = texture;
+    loadedTextures[texIndex]['index'] = textureUnit;
+    loadedTextures[texIndex]['texture'] = texture;
     textureUnit++;
   }
+
+  console.log('loadedTextures', loadedTextures);
 
   const viewMatrix = gl.getUniformLocation(program, 'viewMatrix');
 
@@ -308,15 +310,7 @@ const init = () => {
     lightPosition,
     [0, 0, 0],
     [1, 1, 1],
-    new Material(
-      lightCubeColor,
-      lightCubeColor,
-      1,
-      lightCubeColor,
-      0,
-      1,
-      'none'
-    ),
+    new Material(lightCubeColor, lightCubeColor, 1, lightCubeColor, 0, 1),
     null
   );
 
@@ -327,15 +321,9 @@ const init = () => {
     [0, -(groundHeight / 2), 0],
     [0, 0, 0],
     [groundSize[0], groundHeight, groundSize[1]],
-    new Material(
-      groundColor,
-      groundColor,
-      0.5,
-      vec4(1, 1, 1, 1),
-      0,
-      1,
-      'grass'
-    ),
+    new Material(groundColor, groundColor, 0.5, vec4(1, 1, 1, 1), 0, 1, [
+      'grass',
+    ]),
     null
   );
 
@@ -537,7 +525,7 @@ const init = () => {
 
 window.onload = async () => {
   const createTexture = async (name) => {
-    textures[name] = {
+    loadedTextures[name] = {
       'image': await loadImage('./textures/' + name + '.jpg'),
     };
   };
@@ -547,6 +535,7 @@ window.onload = async () => {
   await createTexture('none');
   await createTexture('shirt');
   await createTexture('face');
+  await createTexture('skin');
 
   init();
 };

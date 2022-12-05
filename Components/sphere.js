@@ -11,14 +11,14 @@ class Sphere {
     gl.enableVertexAttribArray(positionLoc);
   }
 
-  renderHalf(half) {
-    this.material.init(half);
+  renderHalf(half, textureIndex) {
+    this.material.init(half, textureIndex);
     this.setVertices(half);
     gl.drawArrays(gl.TRIANGLES, 0, half.length);
   }
 
   render() {
-    this.renderHalf(sphereHalves.front);
-    this.renderHalf(sphereHalves.back);
+    this.renderHalf(sphereHalves.front, 0);
+    this.renderHalf(sphereHalves.back, 1);
   }
 }

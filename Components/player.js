@@ -27,15 +27,9 @@ class Player {
       translationCords ? translationCords : [0, 0, 0],
       [0, this.bodyAngle, 0],
       [bodyWidth, bodyHeight, 1],
-      new Material(
-        bodyColor,
-        bodyColor,
-        0.8,
-        vec4(1, 1, 1, 1),
-        0.1,
-        60,
-        'shirt'
-      ),
+      new Material(bodyColor, bodyColor, 0.8, vec4(1, 1, 1, 1), 0.1, 60, [
+        'shirt',
+      ]),
       null,
       [0, legHeight + bodyHeight / 2, 0]
     );
@@ -48,7 +42,7 @@ class Player {
       vec4(1, 1, 1, 1),
       0.5,
       16,
-      'face'
+      ['face', 'skin']
     );
     this.head = new Shape(
       'PlayerHead',
@@ -67,7 +61,8 @@ class Player {
       0.2,
       vec4(1, 1, 1, 1),
       0.5,
-      16
+      16,
+      ['skin']
     );
     this.rightArm = new Shape(
       'PlayerRightArm',
@@ -99,7 +94,7 @@ class Player {
       vec4(1, 1, 1, 1),
       0.1,
       60,
-      'jeans'
+      ['jeans']
     );
     this.rightLeg = new Shape(
       'PlayerRightLeg',
