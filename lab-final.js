@@ -195,7 +195,7 @@ const init = () => {
   }
 
   gl.viewport(0, 0, canvas.width, canvas.height);
-  gl.clearColor(1.0, 1.0, 1.0, 1.0);
+  gl.clearColor(...rgbToPercent(163, 176, 204));
 
   gl.enable(gl.DEPTH_TEST);
 
@@ -570,6 +570,12 @@ window.onload = async () => {
   await createTexture('shirt');
   await createTexture('face');
   await createTexture('skin');
+
+  const loading = document.getElementById('loading');
+  loading.remove();
+
+  const app = document.getElementById('app');
+  app.classList.remove('hidden');
 
   init();
 };

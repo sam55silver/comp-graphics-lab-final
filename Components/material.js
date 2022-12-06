@@ -25,14 +25,6 @@ class Material {
     }
   }
 
-  // setNormals(normals) {
-  //   this.normals = normals;
-  // }
-
-  // setTextureCoords(coords) {
-  //   this.textureCoords = coords;
-  // }
-
   init(shape, multiTextureIndex) {
     gl.bindBuffer(gl.ARRAY_BUFFER, nBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, flatten(shape.normals), gl.STATIC_DRAW);
