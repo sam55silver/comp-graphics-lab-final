@@ -1,6 +1,5 @@
 /*
   Lab Final
-  First Person Parkour Game
   Sam Silver
   201901788
 */
@@ -519,13 +518,13 @@ const init = () => {
   lightPosChange('Y');
   lightPosChange('Z');
 
-  window.addEventListener('keypress', function (e) {
+  window.addEventListener('keypress', function(e) {
     if (e.repeat) return;
     if (['w', 's', 'a', 'd', 'f', 'z'].find((key) => key == e.key))
       input.push(e.key);
   });
 
-  window.addEventListener('keyup', function (e) {
+  window.addEventListener('keyup', function(e) {
     e.preventDefault();
     input = input.filter((key) => e.key != key);
   });

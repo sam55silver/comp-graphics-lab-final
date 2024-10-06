@@ -1,0 +1,15 @@
+networks:
+  web:
+    external: true
+
+services:
+  graphics-lab:
+    image: registry.samsilver.ca/graphics-lab:latest
+    restart: always
+    ports:
+      - "8111:80"
+    labels:
+      - "traefik.http.routers.graphics.tls=true"
+      - "traefik.http.routers.graphics.rule=Host(`graphics.samsilver.ca`)"
+    networks:
+      - web
